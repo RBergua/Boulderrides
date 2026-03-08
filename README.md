@@ -82,3 +82,9 @@ Ride data is automatically fetched from the Strava API by a backend process that
 - [Leaflet.js](https://leafletjs.com/) — Interactive maps
 - [OpenStreetMap](https://www.openstreetmap.org/) — Map tiles
 - [Strava API](https://developers.strava.com/) — Source of group ride data, fetched by the backend
+
+## Support
+
+If you find this useful, consider buying me a coffee!
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-donate-yellow?logo=buy-me-a-coffee)](https://buymeacoffee.com/rbergua)
