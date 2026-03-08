@@ -8,8 +8,8 @@ An interactive map showing local cycling club group rides in the Boulder, CO are
 
 - **7-day calendar** — Quickly see which days have scheduled rides; the first day with rides loads automatically
 - **Interactive map** — Routes are drawn as color-coded polylines using [Leaflet.js](https://leafletjs.com/) and OpenStreetMap tiles
-- **Hover tooltips** — Shows club name, ride title, start time, and whether the ride is women-only
-- **Click to open** — Click any route to open the Strava ride's event in a new tab
+- **Desktop** — Hover over a route to see club name, ride title, start time, and whether the ride is women-only; click to open the Strava event in a new tab
+- **Mobile** — Tap a route to see the ride details; tap again to open the Strava event
 - **Auto-fit bounds** — The map zooms to fit all routes for the selected day
 
 ## Getting Started
@@ -56,7 +56,7 @@ Ride data is automatically fetched from the Strava API by a backend process that
 | Field | Type | Description |
 |---|---|---|
 | `club_name` | string | Name of the organizing club |
-| `title` | string | Ride name or description |
+| `title` | string | Ride name |
 | `date` | string | `"YYYY-MM-DD HH:MM"` format |
 | `url` | string | Link to the Strava ride event |
 | `women_only` | boolean | If `true`, shown in the description |
