@@ -72,7 +72,7 @@
   // -------------------------------
   const defaultCenter = [40.01499, -105.27055]; // Boulder, CO. [Lat, Long]
   const defaultZoom = 14; // Zoom level 14
-  const map = L.map('map', { zoomSnap: 0, tapTolerance: 99999, tap: false }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels. tap: false it does not wait to distinguish between a tap and a long press. 
+  const map = L.map('map', { zoomSnap: 0, tapTolerance: 100, tap: false }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels. tap: false it does not wait to distinguish between a tap and a long press. 
 
   // Close all tooltips when tapping the map background
   map.on('click', function () {
