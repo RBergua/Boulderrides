@@ -72,7 +72,7 @@
   // -------------------------------
   const defaultCenter = [40.01499, -105.27055]; // Boulder, CO. [Lat, Long]
   const defaultZoom = 14; // Zoom level 14
-  const map = L.map('map', { zoomSnap: 0 }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels.  
+  const map = L.map('map', { zoomSnap: 0, tapTolerance: 9999999, tap: false }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels. tap: false it does not wait to distinguish between a tap and a long press. 
 
   // Close all tooltips when tapping the map background
   map.on('click', function () {
@@ -158,7 +158,7 @@
           // Second tap → close tooltip and open Strava
           // -------------------------------------------------------
           
-          const hitArea = L.polyline(ride.route, { weight: 100, opacity: 0 }).addTo(fg);
+          const hitArea = L.polyline(ride.route, { weight: 150, opacity: 0 }).addTo(fg);
           hitArea._tooltipShown = false;
           hitArea.bindTooltip(tooltipContent, {
             sticky: false,
@@ -167,9 +167,8 @@
             offset: [0, 0]
           });
 
-          hitArea.on('touchend', function (e) {
+          hitArea.on('click', function (e) {
             L.DomEvent.stopPropagation(e); // prevent map background click from firing
-            L.DomEvent.preventDefault(e);
             if (this._tooltipShown) {
               // Second tap → close tooltip and open Strava
               this.closeTooltip();
