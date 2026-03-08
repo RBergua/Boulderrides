@@ -106,8 +106,9 @@
   const defaultZoom = 14; // Zoom level 14
   const map = L.map('map', { zoomSnap: 0 }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels
 
-  // Close any open tooltips when tapping on the map background (mobile)
+  // On mobile: Close open tooltips only when tapping the map background (not a route or tooltip)
   map.on('click', function () {
+    log('map background tapped');
     map.eachLayer(l => { if (l.closeTooltip) l.closeTooltip(); });
   });
   
@@ -167,7 +168,7 @@
         L.DomEvent.stopPropagation(e); // prevent map click from closing tooltip
         const isOpen = this.isTooltipOpen(); // IMPORTANT: use local variable, not window.open
         log('route tapped, tooltipOpen was: ' + isOpen);
-        if (isOpen()) {
+        if (isOpen) {
           this.closeTooltip();
         } else {
           // Close any other open tooltips first
