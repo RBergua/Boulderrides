@@ -1,0 +1,257 @@
+<!-- To run locally using Visual Studio Code, you can use: python -m http.server 8000, and open http://localhost:8000 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Boulder Group Rides</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
+  <style>
+    /* Fit on the screen, with no scrollbars */
+    html, body {
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      font-family: Arial;
+      overflow: hidden; /* prevents scrollbars */
+    }
+    #calendar { 
+      display: flex; 
+      gap: 10px;
+      padding: 10px; 
+      overflow-x: auto;
+    }
+    .day-column { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      min-width: 60px;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;   
+    }
+    .ride-day {
+      background-color: #f2f2f2; /* light gray background for days with rides */
+    }
+    .ride-tooltip {
+      font-size: 1.5em; /* font size for tooltips */
+    }
+    .day-name { font-weight: bold; }
+    .day-date { font-size: 0.85em; color: gray; }
+    .selected { background-color: #007bff; color: white; } /* background color blue when selected */
+    .selected .day-date { color: white; } /* letters turn white when selected */
+    #map {
+      height: calc(100% - 60px); /* 100% minus calendar height */
+    }
+  </style>
+</head>
+<body>
+
+<div id="calendar"></div>
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  // -------------------------------
+  // Initialize Leaflet map
+  // -------------------------------
+  const defaultCenter = [40.01499, -105.27055]; // Boulder, CO. [Lat, Long]
+  const defaultZoom = 14; // Zoom level 14
+  const map = L.map('map', { zoomSnap: 0 }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels
+
+  // Original OpenStreetMap 
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+
+  // -------------------------------
+  // Load routes from club_rides.json
+  // ------------------------------- 
+  let ridesByDate = {};
+
+  fetch('club_rides.json')
+    .then(response => response.json())
+    .then(rides => {
+      // Group rides by date (YYYY-MM-DD)
+      rides.forEach(ride => {
+        const date = ride.date.split(" ")[0]; // Extract YYYY-MM-DD from "2026-03-04 12:00"
+        if (!ridesByDate[date]) ridesByDate[date] = [];
+        ridesByDate[date].push(ride);
+      });
+
+      generateCalendar();
+    });
+  
+  // -------------------------------
+  // Function to draw routes for a given date
+  // -------------------------------
+  function loadRoutes(date) {
+
+    // Debug logs to check the selected date and available rides (CTRL+SHIFT+I in browser to open console)
+    console.log("Selected date:", date);
+    console.log("Dates with rides:", Object.keys(ridesByDate));
+
+    // Remove old polylines
+    map.eachLayer(layer => {
+      if (layer instanceof L.Polyline || layer instanceof L.CircleMarker) {
+        map.removeLayer(layer);
+      }
+    });
+
+    const routes = ridesByDate[date] || [];
+    if (routes.length === 0) {
+      // No routes → reset to default view
+      map.setView(defaultCenter, defaultZoom);
+      return;
+    }
+
+    // Palette of colors (will cycle if more routes than colors)
+    const colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown', 'pink'];
+    
+    // Collect all polylines
+    const fg = L.featureGroup().addTo(map);
+
+    routes.forEach((ride, idx) => {
+      if (ride.route && ride.route.length > 0) {
+        const color = ride.color || colors[idx % colors.length]; // cycle colors if more routes than colors
+        L.polyline(ride.route, {
+          color: color, 
+          weight: 4,
+          opacity: 0.8
+        })
+        // Show ride details on hover
+        .bindTooltip(
+          `<b>${ride.club_name}</b><br>
+          ${ride.title}<br>
+          ${ride.women_only ? 'Women only<br>' : ''}
+          ${ride.date.split(" ")[1]}`,
+          { sticky: true, className: 'ride-tooltip' }
+        )
+        // Follow URL on click
+        .on('mouseover', function() { this.setStyle({ weight: 7 }); })
+        .on('mouseout',  function() { this.setStyle({ weight: 4 }); })
+        .on('click', function() {
+          if (ride.url) window.open(ride.url, '_blank');
+        })
+        .addTo(fg);
+
+        // Add the marker for the start of the ride
+        const start = ride.starting_location || ride.route[0];
+        L.circleMarker(start, { radius: 6, color: color, fillColor: color, fillOpacity: 1 })
+          .bindTooltip(
+            `<b>${ride.club_name}</b><br>
+            ${ride.title}<br>
+            ${ride.women_only ? 'Women only<br>' : ''}
+            ${ride.date.split(" ")[1]}`,
+            { sticky: true, className: 'ride-tooltip' }
+          )
+          .on('mouseover', function() { this.setStyle({ weight: 7 }); })
+          .on('mouseout',  function() { this.setStyle({ weight: 4 }); })
+          .on('click', function() {
+            if (ride.url) window.open(ride.url, '_blank');
+          })
+          .addTo(fg);
+      }
+    });
+
+    // Fit to all polylines
+    const bounds = fg.getBounds();
+    if (bounds.isValid()) {
+      // Dynamic padding based on map size (5% of width/height)
+      const mapSize = map.getSize();
+      const padX = Math.round(mapSize.x * 0.05);
+      const padY = Math.round(mapSize.y * 0.05);
+
+      map.fitBounds(bounds, {
+        paddingTopLeft: [padX, padY],
+        paddingBottomRight: [padX, padY],
+        maxZoom: defaultZoom // Fit to bounds but don't zoom in more than defaultZoom
+      });
+    }
+  }   
+
+  // -------------------------------
+  // Generate 7-day calendar
+  // -------------------------------
+  // Local date string in YYYY-MM-DD format for comparison with ride dates
+  function formatLocalDate(date) {
+  return date.getFullYear() + "-" +
+         String(date.getMonth() + 1).padStart(2,'0') + "-" +
+         String(date.getDate()).padStart(2,'0');
+  }
+  function generateCalendar() {
+    const calendarDiv = document.getElementById("calendar");
+    const today = new Date();
+    const weekdays = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+    
+    let firstRideDate = null;
+    let firstRideCol = null;
+
+    for (let i = 0; i < 7; i++) { // We can easily change this to show more days if desired. Currently: 7
+      const date = new Date();
+      date.setDate(today.getDate() + i);
+
+      const isoDate = formatLocalDate(date);
+
+      const dayName = weekdays[date.getDay()];
+      const formattedDate = date.toLocaleString('en-US', { month: 'short', day: 'numeric' }); // e.g. Jun 1
+
+      const col = document.createElement("div");
+      col.className = "day-column";
+
+      const rides = ridesByDate[isoDate] || [];
+
+      if (rides.length) {
+        col.classList.add("ride-day"); // highlight days with rides
+      }
+
+      // Calendar text
+      const nameDiv = document.createElement("div");
+      nameDiv.className = "day-name";
+      nameDiv.innerText = dayName;
+
+      const dateDiv = document.createElement("div");
+      dateDiv.className = "day-date";
+      dateDiv.innerText = `(${formattedDate})`;
+
+      col.appendChild(nameDiv);
+      col.appendChild(dateDiv);
+
+      col.onclick = () => {
+        // Remove previous selection
+        document.querySelectorAll('.day-column').forEach(el => el.classList.remove('selected'));
+        col.classList.add('selected');
+
+        // Load routes for this date
+        loadRoutes(isoDate);
+      }
+
+      // remember the first day that has rides
+      if (!firstRideDate && ridesByDate[isoDate]?.length) {
+        firstRideDate = isoDate;
+        firstRideCol = col;
+      }
+
+      calendarDiv.appendChild(col);
+    }
+
+    // Load the first day with rides by default (or just show map if no rides)
+    if (firstRideDate) {
+      firstRideCol.classList.add('selected');
+      loadRoutes(firstRideDate);
+    } else { // No rides → just show default map view
+      map.setView(defaultCenter, defaultZoom);
+    }
+}
+</script>
+</body>
+</html>
