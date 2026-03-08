@@ -71,8 +71,7 @@
   // -------------------------------
   // Detect touch device (mobile)
   // -------------------------------
-  //const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-  const isTouchDevice = true;
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
   console.log("isTouchDevice:", isTouchDevice); // Check if we detect computer vs mobile devices properly (CTRL+SHIFT+I in browser to open console)
 
   // -------------------------------
@@ -82,6 +81,11 @@
   const defaultZoom = 14; // Zoom level 14
   const map = L.map('map', { zoomSnap: 0 }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels
 
+  // Close any open tooltips when tapping on the map background (mobile)
+  map.on('click', function () {
+    map.eachLayer(l => { if (l.closeTooltip) l.closeTooltip(); });
+  });
+  
   // Original OpenStreetMap 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -132,8 +136,9 @@
     });
 
     if (isTouchDevice) {
-      // Mobile: tap to open tooltip (with the link inside to go to Strava)
-      layer.on('click', function () {
+      // Mobile: tap to open/close tooltip (with the link inside to go to Strava)
+      layer.on('click', function (e) {
+        L.DomEvent.stopPropagation(e); // prevent map click from closing tooltip
         if (this.isTooltipOpen()) {
           this.closeTooltip();
         } else {
