@@ -1,6 +1,7 @@
 # Boulder Group Rides
 
-An interactive map showing local cycling club group rides in the Boulder, CO area. Browse upcoming rides by day, view routes on a map, and click to see event details and sign up.
+An interactive map showing local cycling club group rides in the Boulder, CO area. Browse upcoming rides by day, view routes on a map, and click to see event details and join.
+
 ![Boulder Group Rides demo](demo.gif)
 
 ## Features
@@ -25,6 +26,10 @@ python -m http.server 8000
 ```
 
 Then open [http://localhost:8000](http://localhost:8000) in your browser.
+
+## Live version
+
+[https://rbergua.github.io/Boulderrides/](https://rbergua.github.io/Boulderrides/)
 
 ## Data Format
 
