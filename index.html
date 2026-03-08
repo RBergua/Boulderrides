@@ -165,8 +165,9 @@
       // Mobile: tap to open/close tooltip (with the link inside to go to Strava)
       layer.on('click', function (e) {
         L.DomEvent.stopPropagation(e); // prevent map click from closing tooltip
-        log('route tapped, tooltipOpen was: ' + open);
-        if (this.isTooltipOpen()) {
+        const isOpen = this.isTooltipOpen(); // IMPORTANT: use local variable, not window.open
+        log('route tapped, tooltipOpen was: ' + isOpen);
+        if (isOpen()) {
           this.closeTooltip();
         } else {
           // Close any other open tooltips first
@@ -217,6 +218,11 @@
       if (ride.route && ride.route.length > 0) {
         const color = ride.color || colors[idx % colors.length]; // cycle colors if more routes than colors
         
+        // Invisible wide polyline (20% thick) for easier tapping on mobile or hovering on desktop
+        const hitArea = L.polyline(ride.route, { weight: 20, opacity: 0 }).addTo(fg);
+        attachEvents(hitArea, ride, 20, 20);
+
+        // Visible polyline
         const polyline = L.polyline(ride.route, {
           color: color,
           weight: 4,
