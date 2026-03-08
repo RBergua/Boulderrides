@@ -230,6 +230,7 @@
           opacity: 0.8
         }).addTo(fg);
         attachEvents(polyline, ride, 4, 7);
+        if (!isTouchDevice) attachEvents(polyline, ride, 4, 7); // For desktop
 
         // Add the marker for the start of the ride
         const start = ride.starting_location || ride.route[0];
