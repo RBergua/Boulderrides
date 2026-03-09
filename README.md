@@ -1,3 +1,5 @@
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/rbergua)
+
 # Boulder Group Rides
 
 An interactive map showing local cycling club group rides in the Boulder, CO area. Browse upcoming rides by day, view routes on a map, and click to see event details and join.
@@ -85,6 +87,6 @@ Ride data is automatically fetched from the Strava API by a backend process that
 
 ## Support
 
-If you find this useful, consider buying me a coffee!
+If you find this project useful, you can also buy me a coffee (donate a small amount) with the link below:
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-donate-yellow?logo=buy-me-a-coffee)](https://buymeacoffee.com/rbergua)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/rbergua)
