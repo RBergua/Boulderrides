@@ -146,7 +146,7 @@
 
     <h1>Boulder Group Rides</h1>
     <p>
-      Every goup ride you're looking for, all in one place! This map pulls upcoming rides from the most active cycling clubs in Boulder County and displays them on an interactive map.
+      Every group ride you're looking for, all in one place! This map pulls upcoming rides from the most active cycling clubs in Boulder County and displays them on an interactive map.
     </p>
     
     <hr>
@@ -219,10 +219,6 @@
     </p>
   </div>
 </div>
-
-<!-- Full-screen info page -->
-<div id="info-page">
-  <button id="info-close" onclick="document.getElementById('info-page').classList.remove('open')">✕ Close</button>
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -383,7 +379,7 @@
           const start = ride.starting_location || ride.route[0];
           const marker = L.circleMarker(start, { radius: 6, color: color, fillColor: color, fillOpacity: 1 }).addTo(fg);
           marker.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
-          marker.on('mouseover', function () { this.setStyle({ weight: 7 }); });
+          marker.on('mouseover', function () { this.setStyle({ weight: 3 }); });
           marker.on('mouseout',  function () { this.setStyle({ weight: 1 }); });
           marker.on('click', function () { if (ride.url) window.open(ride.url, '_blank'); });
         }
