@@ -49,13 +49,179 @@
     #map {
       height: calc(100% - 60px); /* 100% minus calendar height */
     }
+
+    #info-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 16px;
+      z-index: 1000;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.9em;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: background 0.2s;
+    }
+    #info-btn:hover { background: #0056b3; }
+
+    /* ── Full-screen info page ── */
+    #info-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: white;
+      z-index: 2000;
+      overflow-y: auto;
+    }
+    #info-page.open { display: block; }
+
+    #info-content {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 60px 24px 48px;
+    }
+
+    /* Close button — fixed top-right always visible */
+    #info-close {
+      position: fixed;
+      top: 14px;
+      right: 16px;
+      z-index: 2100;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-size: 0.9em;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: background 0.2s;
+    }
+    #info-close:hover { background: #0056b3; }
+
+    /* Info page typography */
+    #info-content h1 {
+      font-size: 1.6em;
+      color: #007bff;
+      margin: 0 0 8px;
+    }
+    #info-content h2 {
+      font-size: 1.15em;
+      color: #222;
+      margin: 28px 0 8px;
+    }
+    #info-content p {
+      margin: 0 0 12px;
+      line-height: 1.7;
+      color: #333;
+      font-size: 0.95em;
+    }
+    #info-content hr {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 24px 0;
+    }
   </style>
 </head>
 <body>
 
 <div id="calendar"></div>
 <div id="map"></div>
-<div id="debug"></div>
+
+<!-- Info button -->
+<button id="info-btn" onclick="document.getElementById('info-page').classList.add('open')">Info</button>
+
+<!-- Full-screen info page -->
+<div id="info-page">
+  <button id="info-close" onclick="document.getElementById('info-page').classList.remove('open')">✕ Close</button>
+
+  <div id="info-content">
+
+    <h1>Boulder Group Rides</h1>
+    <p>
+      Find your next group ride... all in one place! This map pulls upcoming rides from the most active cycling clubs in Boulder County and displays them on a live, interactive map.
+    </p>
+    
+    <p>
+      Browse the calendar at the top, tap any day to see that day's rides, then hover (or tap) a route to see the details. Click to open the event directly on Strava and join the ride.
+    </p>
+
+    <hr>
+
+    <h2>Why this exists</h2>
+    <p>
+      Boulder's group ride scene is incredible. But finding out what's happening, when, and where has always meant hunting across a dozen club pages. This project fixes that. One map. Every club. Every week.
+    </p>
+
+    <p>
+      A small backend process pulls the latest events from the Strava API twice a day (noon &amp; 1 AM) and filters them down to rides that actually start near Boulder. The result is always fresh and requires zero effort from the clubs themselves.
+    </p>
+
+    <hr>
+
+    <h2>Clubs on the map</h2>
+    <p>
+      Rides from the following clubs are currently included. Want yours added? <a href="https://github.com/RBergua/Boulderrides/issues" target="_blank">Open a GitHub issue</a> and it'll be considered.
+    </p>
+
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 16px;">
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Rapha Boulder</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Fast &amp; Flat</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Gateway</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Pas Normal Studios</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">MAAP</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Wednesday Morning Velo</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Thank Gravel It's Friday</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Ride or Die Collective</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Lo-La Gravel</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Hot Laps</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Wednesday Flag</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Cassiopeia</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">The Tuesday Night Ride</span>
+    </div>
+
+    <p style="font-size:0.88em; color:#666;">
+      Some of these clubs are international. Only rides starting within ~30 miles of downtown Boulder are shown. Rides without a linked Strava route are also excluded.
+    </p>
+
+    <h2>How to use it</h2>
+    <p>
+      <strong>Days with rides</strong> are highlighted in the calendar at the top. Tap one to load its routes onto the map.
+    </p>
+    <p>
+      <strong>On desktop:</strong> hover a route to see the club name, ride title, and start time. Click to open the Strava event and sign up.
+    </p>
+    <p>
+      <strong>On mobile:</strong> tap a route once to see its details, then tap again to open it in Strava.
+    </p>
+
+    <hr>
+
+    <h2>Contact &amp; support</h2>
+    <p>
+      Questions, bugs, or club suggestions? <a href="https://github.com/RBergua/Boulderrides/issues" target="_blank">Open an issue on GitHub</a>.
+    </p>
+    <p>
+      This project is free and runs on a personal server. If it has saved you time or gotten you out on a ride, a $3 contribution goes a long way toward keeping it alive.
+    </p>
+    <p>
+      <a href="https://buymeacoffee.com/rbergua" target="_blank">
+        <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee">
+      </a>
+    </p>
+  </div>
+</div>
+
+<!-- Full-screen info page -->
+<div id="info-page">
+  <button id="info-close" onclick="document.getElementById('info-page').classList.remove('open')">✕ Close</button>
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
