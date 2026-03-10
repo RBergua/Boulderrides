@@ -69,7 +69,7 @@ Ride data is automatically fetched from the Strava API by a backend process that
 
 ```
 ├── index.html        # Main app (map + calendar)
-└── club_rides.json   # Ride data, auto-updated by the backend process (Strava API)
+└── club_rides.json   # Ride data, auto-updated by the backend process (Strava API). The file is only committed when its contents change.
 ```
 
 ## Customization
