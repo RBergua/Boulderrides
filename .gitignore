@@ -1,0 +1,9 @@
+demo.gif
+index.html
+LICENSE
+README.md
+refresh_token.txt
+event_log.json
+.env
+strava_env/
+Strava_requests.py
