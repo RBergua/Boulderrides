@@ -18,8 +18,8 @@ It aggregates **Strava club events** and displays upcoming rides by day.
 
 - **7-day calendar** — Quickly see which days have scheduled rides; the first day with rides loads automatically
 - **Interactive map** — Routes are drawn as color-coded polylines using [Leaflet.js](https://leafletjs.com/) and OpenStreetMap tiles
-- **Desktop (preferred)** — Hover over a route to see club name, ride title, start time, and whether the ride is women-only; click to open the Strava event in a new tab
-- **Mobile** — Tap a route to see the ride details; tap again to open the Strava event
+- **Desktop** — Hover over a route to see club name, ride title, start time, and whether the ride is women-only; click to open the Strava event in a new tab
+- **Mobile** — Tap a route to see its details in a panel at the bottom; tap "Open in Strava" to view the event; swipe the panel down to dismiss it
 - **Auto-fit bounds** — The map zooms to fit all routes for the selected day
 
 ## Getting Started
