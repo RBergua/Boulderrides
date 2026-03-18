@@ -1,6 +1,8 @@
 <!-- If you use Visual Studio Code, you can render the README.md locally by pressing: Ctrl+Shift+V -->
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/rbergua)
-<img src="https://img.shields.io/github/last-commit/rbergua/boulderrides?style=flat" alt="GitHub last commit">
+<a href="https://github.com/rbergua/boulderrides/commits">
+  <img src="https://img.shields.io/github/last-commit/rbergua/boulderrides?style=flat&timezone=America%2FDenver&display_timestamp=committer" alt="GitHub last commit">
+</a>
 
 # Boulder Group Rides
 
