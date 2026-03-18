@@ -1,4 +1,5 @@
 <!-- To run locally using Visual Studio Code, you can use: python -m http.server 8000, and open http://localhost:8000 -->
+<!-- It is also possible to emulate a mobile device by means of F12 in the browser and toggle device toolbar -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -131,6 +132,44 @@
       border-top: 1px solid #eee;
       margin: 24px 0;
     }
+
+    /* ── Mobile bottom sheet ── */
+    #ride-sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
+      background: white; border-radius: 18px 18px 0 0;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+      pointer-events: none;
+    }
+    #ride-sheet.open { transform: translateY(0); pointer-events: all; }
+    #sheet-handle { width: 40px; height: 4px; background: #ccc; border-radius: 2px; margin: 12px auto 0; }
+    #sheet-body { padding: 16px 20px 28px; font-family: Arial, sans-serif; }
+    #sheet-color-bar { width: 18px; height: 18px; border-radius: 50%; margin-bottom: 14px; background: #007bff; }
+    #sheet-club { font-size: 1.08em; font-weight: 700; color: #111; margin: 0 0 4px; line-height: 1.3; }
+    #sheet-title { font-size: 0.9em; font-weight: 400; letter-spacing: 0.08em; color: #888; margin: 0 0 12px; }
+    #sheet-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .sheet-badge { background: #f0f6ff; color: #007bff; border: 1px solid #cce0ff; border-radius: 20px; padding: 4px 12px; font-size: 0.82em; font-weight: 600; }
+    .sheet-badge.women { background: #f3f0ff; color: #6f42c1; border-color: #d0c4f7; }
+    #sheet-strava-btn {
+      display: block; width: 100%; background: #fc4c02; color: white; border: none;
+      border-radius: 12px; padding: 14px; font-size: 1em; font-weight: 700;
+      font-family: Arial, sans-serif; cursor: pointer; text-align: center;
+      text-decoration: none; box-sizing: border-box;
+      transition: background 0.2s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #sheet-strava-btn:active { background: #e04400; transform: scale(0.98); }
+    #sheet-strava-btn.no-url { background: #ccc; cursor: default; }
+
+    /* Info button floats above sheet when open */
+    @media (pointer: coarse) {
+      #info-btn { transition: background 0.2s, bottom 0.3s ease; }
+      #info-btn.sheet-open { bottom: calc(var(--sheet-height, 200px) + 12px); }
+    }
+    /* Hide sheet entirely on desktop */
+    @media (pointer: fine) { #ride-sheet { display: none !important; } }
+
   </style>
 </head>
 <body>
@@ -140,6 +179,18 @@
 
 <!-- Info button -->
 <button id="info-btn" onclick="document.getElementById('info-page').classList.add('open')">Info</button>
+
+<!-- Mobile bottom sheet -->
+<div id="ride-sheet">
+  <div id="sheet-handle"></div>
+  <div id="sheet-body">
+    <div id="sheet-color-bar"></div>
+    <div id="sheet-club"></div>
+    <div id="sheet-title"></div>
+    <div id="sheet-meta"></div>
+    <a id="sheet-strava-btn" target="_blank" rel="noopener noreferrer">Open in Strava</a>
+  </div>
+</div>
 
 <!-- Full-screen info page -->
 <div id="info-page">
@@ -257,13 +308,16 @@
   const defaultZoom = 14; // Zoom level 14
   const map = L.map('map', { zoomSnap: 0, tapTolerance: 100, tap: false }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels. tap: false it does not wait to distinguish between a tap and a long press. 
 
-  // Close all tooltips when tapping the map background
+  // Close sheet (mobile) or tooltips (desktop) when tapping the map background
   map.on('click', function () {
-    map.eachLayer(l => { if (l.closeTooltip) l.closeTooltip(); });
-    map.eachLayer(l => { if (l._tooltipShown !== undefined) l._tooltipShown = false; });
+    if (isTouchDevice) {
+      closeSheet();
+    } else {
+      map.eachLayer(l => { if (l.closeTooltip) l.closeTooltip(); });
+    }
   });
   
-  // Original OpenStreetMap 
+  // Original OpenStreetMap
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19
@@ -286,7 +340,64 @@
 
       generateCalendar();
     });
-  
+
+  // -------------------------------
+  // Mobile bottom sheet
+  // -------------------------------
+  const sheet      = document.getElementById("ride-sheet");
+  const sheetBar   = document.getElementById("sheet-color-bar");
+  const sheetClub  = document.getElementById("sheet-club");
+  const sheetTitle = document.getElementById("sheet-title");
+  const sheetMeta  = document.getElementById("sheet-meta");
+  const sheetBtn   = document.getElementById("sheet-strava-btn");
+  const infoBtnEl  = document.getElementById("info-btn");
+
+  // Swipe down to close
+  let touchStartY = 0;
+  sheet.addEventListener("touchstart", (e) => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  sheet.addEventListener("touchend", (e) => {
+    const swipeDistance = e.changedTouches[0].clientY - touchStartY;
+    if (swipeDistance > 60) closeSheet(); // 60px downward swipe closes the sheet. Tune the 60 to make it more or less sensitive
+  }, { passive: true });
+
+  function openSheet(ride) {
+    const rideTime = formatTime12h(ride.date.split(" ")[1]);
+    sheetBar.style.background = ride.color || "#007bff";
+    sheetClub.textContent     = ride.club_name;
+    sheetTitle.textContent    = ride.title;
+
+    sheetMeta.innerHTML = "";
+    const tb = document.createElement("span");
+    tb.className = "sheet-badge";
+    tb.textContent = rideTime;
+    sheetMeta.appendChild(tb);
+    if (ride.women_only) {
+      const wb = document.createElement("span");
+      wb.className = "sheet-badge women";
+      wb.textContent = "Women only";
+      sheetMeta.appendChild(wb);
+    }
+
+    if (ride.url) { sheetBtn.href = ride.url; sheetBtn.classList.remove("no-url"); }
+    else          { sheetBtn.removeAttribute("href"); sheetBtn.classList.add("no-url"); }
+
+    sheet.classList.add("open");
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty("--sheet-height", sheet.offsetHeight + "px");
+      infoBtnEl.classList.add("sheet-open");
+    });
+  }
+
+  function closeSheet() {
+    sheet.classList.remove("open");
+    infoBtnEl.classList.remove("sheet-open");
+    if (currentHL) { currentHL.setStyle({ weight: 5, opacity: 0.85 }); currentHL = null; }
+  }
+
+  let currentHL = null;
+
   // -------------------------------
   // Function to draw routes for a given date
   // Desktop: hover to show tooltip, click to open URL
@@ -294,7 +405,9 @@
   // -------------------------------
   function loadRoutes(date) {
 
-    // Debug logs to check the selected date and available rides (CTRL+SHIFT+I in browser to open console)
+    if (isTouchDevice) closeSheet(); // If we're on mobile: close sheet (if it was open) when moving between days
+
+    // Debug logs to check the selected date and available rides (F12 or CTRL+SHIFT+I in browser to open console)
     console.log("Selected date:", date);
     console.log("Dates with rides:", Object.keys(ridesByDate));
 
@@ -320,61 +433,40 @@
 
     routes.forEach((ride, idx) => {
       if (ride.route && ride.route.length > 0) {
-        const color = ride.color || colors[idx % colors.length]; // cycle colors if more routes than colors
+        const color = colors[idx % colors.length]; // cycle colors if more routes than colors
+        ride.color = color; // store so openSheet can use it
         const rideTime = formatTime12h(ride.date.split(" ")[1]); // convert time to 12-hour format (AM/PM)
 
-        const tooltipContent = isTouchDevice
-          ? `<b>${ride.club_name}</b><br>
-             ${ride.title}<br>
-             ${ride.women_only ? 'Women only<br>' : ''}
-             ${rideTime}<br>
-             ${ride.url ? '<i>Tap again to open in Strava</i>' : ''}`
-          : `<b>${ride.club_name}</b><br>
+        // Tooltip (only shown on desktop)
+        const tooltipContent = `<b>${ride.club_name}</b><br> 
              ${ride.title}<br>
              ${ride.women_only ? 'Women only<br>' : ''}
              ${rideTime}`;
-        
+
         if (isTouchDevice) {
           // -------------------------------------------------------
-          // MOBILE: one wide invisible hit area handles all tapping.
-          // State tracked with _tooltipShown boolean.
-          // First tap  → show tooltip
-          // Second tap → close tooltip and open Strava
+          // MOBILE: tap route → bottom sheet slides up with details
           // -------------------------------------------------------
-          
-          const hitArea = L.polyline(ride.route, { weight: 150, opacity: 0 }).addTo(fg);
-          hitArea._tooltipShown = false;
-          hitArea.bindTooltip(tooltipContent, {
-            sticky: false,
-            className: 'ride-tooltip',
-            direction: 'center', // positions tooltip centered on the tapped point rather than to the side
-            offset: [0, 0]
-          });
 
-          hitArea.on('click', function (e) {
-            L.DomEvent.stopPropagation(e); // prevent map background click from firing
-            if (this._tooltipShown) {
-              // Second tap → close tooltip and open Strava
-              this.closeTooltip();
-              this._tooltipShown = false;
-              if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer');
-            } else {
-              // First tap → close any other open tooltips, show this one
-              map.eachLayer(l => {
-                if (l.closeTooltip) l.closeTooltip();
-                if (l._tooltipShown !== undefined) l._tooltipShown = false;
-              });
-              this.openTooltip();
-              this._tooltipShown = true;
-            }
-          });
+          // Visible polyline
+          const vl = L.polyline(ride.route, { color, weight: 5, opacity: 0.85 }).addTo(fg);
 
-          // Visible polyline — purely visual, no events on mobile
-          L.polyline(ride.route, { color: color, weight: 4, opacity: 0.8 }).addTo(fg);
+          // Wide invisible hit area for easier tapping
+          const hitArea = L.polyline(ride.route, { weight: 40, opacity: 0, interactive: true }).addTo(fg);
 
-          // Start marker — purely visual, no events on mobile
+          const tapHandler = (e) => {
+            L.DomEvent.stopPropagation(e);
+            if (currentHL && currentHL !== vl) currentHL.setStyle({ weight: 5, opacity: 0.85 });
+            vl.setStyle({ weight: 8, opacity: 1 });
+            currentHL = vl;
+            openSheet(ride);
+          };
+          hitArea.on('click', tapHandler);
+
+          // Start marker
           const start = ride.starting_location || ride.route[0];
-          L.circleMarker(start, { radius: 6, color: color, fillColor: color, fillOpacity: 1 }).addTo(fg);
+          L.circleMarker(start, { radius: 7, color, fillColor: color, fillOpacity: 1, weight: 2 })
+            .addTo(fg).on('click', (e) => { L.DomEvent.stopPropagation(e); tapHandler(e); });
 
         } else {
           // -------------------------------------------------------
