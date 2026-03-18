@@ -1,5 +1,6 @@
 <!-- To run locally using Visual Studio Code, you can use: python -m http.server 8000, and open http://localhost:8000 -->
 <!-- It is also possible to emulate a mobile device by means of F12 in the browser and toggle device toolbar -->
+<!-- Reminder: Hard refresh (Ctrl + Shift + R on Windows/Linux, Cmd + Shift + R on Mac) forces the browser to re-download all files instead of using cached versions. -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -178,8 +179,8 @@
 <div id="calendar"></div>
 <div id="map"></div>
 
-<!-- Info button -->
-<button id="info-btn" onclick="document.getElementById('info-page').classList.add('open')">Info</button>
+<!-- Help button (previously named "Info") -->
+<button id="info-btn" onclick="document.getElementById('info-page').classList.add('open')">Help</button>
 
 <!-- Mobile bottom sheet -->
 <div id="ride-sheet">
