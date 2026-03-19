@@ -80,7 +80,7 @@ Ride data is automatically fetched from the Strava API by a backend process that
 
 ## Customization
 
-- **Days shown** — Change the `7` in `generateCalendar()` to show more or fewer days. Note that a longer window of time could be misleading. Recurring rides only appear once their previous occurrence has passed, so looking further ahead would result in missing entries
+- **Days shown** — Change the `7` in `generateCalendar()` to show more or fewer days. Note that a longer window of time could be misleading. Recurring weekly rides only appear once their previous occurrence has passed, so looking further ahead would result in missing entries
 - **Default map center** — Update `defaultCenter` in `index.html` (currently set to downtown Boulder)
 - **Default zoom** — Update `defaultZoom` (currently `14`)
 - **Route colors** — Edit the `colors` palette array in `index.html` to change the cycle of colors assigned to routes
