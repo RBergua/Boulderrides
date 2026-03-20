@@ -10,7 +10,6 @@
       -105.281308
     ],
     "women_only": false,
-    "surface_type": "road",
     "route": [
       [
         40.02018,
@@ -1685,7 +1684,6 @@
       -105.276623
     ],
     "women_only": false,
-    "surface_type": "road",
     "route": [
       [
         40.06197,
@@ -3848,7 +3846,6 @@
       -105.281308
     ],
     "women_only": false,
-    "surface_type": "road",
     "route": [
       [
         40.02568,
@@ -17039,7 +17036,6 @@
       -105.235663
     ],
     "women_only": false,
-    "surface_type": "road",
     "route": [
       [
         40.08031,
@@ -18006,7 +18002,6 @@
       -105.217941
     ],
     "women_only": false,
-    "surface_type": "road",
     "route": [
       [
         40.02042,
@@ -19013,7 +19008,6 @@
       -105.25411
     ],
     "women_only": true,
-    "surface_type": "road",
     "route": [
       [
         40.02471,
@@ -20332,7 +20326,6 @@
       -105.271457
     ],
     "women_only": false,
-    "surface_type": "road",
     "route": [
       [
         40.01964,
