@@ -35,6 +35,8 @@
       gap: 10px;
       padding: 10px; 
       overflow-x: auto;
+      height: 64px;
+      box-sizing: border-box;
     }
     .day-column { 
       display: flex; 
@@ -63,7 +65,7 @@
     .selected .day-date { color: white; } /* letters turn white when selected */
     .leaflet-interactive:focus { outline: none; } /* removes focus rectangle from route on map on click */
     #map {
-      height: calc(100% - 60px); /* 100% minus calendar height */
+      height: calc(100% - 64px); /* 100% minus calendar height */
     }
 
     #info-btn {
@@ -370,9 +372,6 @@
     .catch(() => {
       console.warn('MapTiler unavailable, falling back to OpenStreetMap');
       osmLayer.addTo(map);
-
-      map.attributionControl.setPrefix('');
-      map.attributionControl.addAttribution(osmAttribution);
     });
 
   // -------------------------------
