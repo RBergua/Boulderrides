@@ -175,10 +175,12 @@
     #sheet-strava-btn:active { background: #e04400; transform: scale(0.98); }
     #sheet-strava-btn.no-url { background: #ccc; cursor: default; }
 
-    /* Info button hides behind sheet when open */
+    /* Info button and map attributionhides behind sheet when open */
     @media (pointer: coarse) {
       #info-btn { transition: background 0.2s, bottom 0.3s ease; }
       #info-btn.sheet-open { opacity: 0; pointer-events: none; }
+      .leaflet-control-attribution { transition: opacity 0.3s ease; }
+      .leaflet-control-attribution.hidden { opacity: 0; pointer-events: none; }
     }
     /* Hide sheet entirely on desktop */
     @media (pointer: fine) { #ride-sheet { display: none !important; } }
@@ -416,12 +418,14 @@
     requestAnimationFrame(() => {
       document.documentElement.style.setProperty("--sheet-height", sheet.offsetHeight + "px");
       infoBtnEl.classList.add("sheet-open");
+      document.querySelector('.leaflet-control-attribution').classList.add('hidden');
     });
   }
 
   function closeSheet() {
     sheet.classList.remove("open");
     infoBtnEl.classList.remove("sheet-open");
+    document.querySelector('.leaflet-control-attribution').classList.remove('hidden');
     if (currentHL) { currentHL.setStyle({ weight: 5, opacity: 0.85 }); currentHL = null; }
   }
 
