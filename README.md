@@ -94,7 +94,8 @@ Ride data is automatically fetched from the Strava API by a backend process that
 
 - [Leaflet.js](https://leafletjs.com/) — Interactive maps
 - [MapTiler](https://www.maptiler.com/) — Outdoor/terrain map tiles (primary)
-- [OpenStreetMap](https://www.openstreetmap.org/) — Map tiles (fallback)
+- [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) — Extends MapTiler tile cache from the deault 8 hours to 90 days, saving API requests and making the map load faster for returning visitors (tiles served from disk instead of the network)
+- [OpenStreetMap](https://www.openstreetmap.org/) — Map tiles (fallback if MapTiler quota is exceeded or unavailable)
 - [Strava API](https://developers.strava.com/) — Source of group ride data, fetched by the backend
 - [GoatCounter](https://www.goatcounter.com/) — Privacy-friendly analytics
 
