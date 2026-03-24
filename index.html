@@ -254,12 +254,14 @@
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Lo-La Gravel</span>
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Hot Laps</span>
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Wednesday Flag</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Thursday Gravel</span>
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Mike's Bikes Boulder</span>      
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Cassiopeia</span>
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">The Tuesday Night Ride</span>
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Peak to Peak Endurance</span>
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">The Donut Ride</span>
       <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Boulder Friday Coffee Ride</span>
+      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Logmont Velo</span>
     </div>
 
     <p style="font-size:0.8em; color:#666;">
@@ -327,7 +329,7 @@
   // -------------------------------
   const defaultCenter = [40.01499, -105.27055]; // Boulder, CO. [Lat, Long]
   const defaultZoom = 14; // Zoom level 14
-  const map = L.map('map', { zoomSnap: 0, tapTolerance: 100, tap: false }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels. tap: false it does not wait to distinguish between a tap and a long press. 
+  const map = L.map('map', { zoomSnap: 0, tapTolerance: 100, tap: false }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels. tap: false it does not wait to distinguish between a tap and a long press.
 
   // Close sheet (mobile) or tooltips (desktop) when tapping the map background
   map.on('click', function () {
@@ -345,7 +347,7 @@
   // Tiles should be cached in the user's browser after the first load. But they only last 8 hours per user (MapTiler's Cache-Control).
   // We use a strategy (Service Worker [sw.js]) to extend the tiles in cache from 8 hours to 90 days and save MapTiler API requests.
   const ENABLE_CACHE_MAPTILER = true; // Set to false to disable caching
-  const MAPTILER_API_KEY = 'g8OdcHBJTdeo8Xdt8nLE'; // This API key is locked to requests that come from the boulderrides.cc domain. Use a general key for local testing in localhost.
+  const MAPTILER_API_KEY = 'g8OdcHBJTdeo8Xdt8nLE'; // This API key is locked to requests that come from the boulderrides.cc domain. Use a general key for local testing in localhost. Provide a bad key to fall back to OSM as well.
   const maptilerAttribution = '&copy; <a href="https://www.maptiler.com/">MapTiler</a> &copy; <a href="https://www.openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
   const osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
   const osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'; // Fallback to legacy map
