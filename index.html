@@ -559,9 +559,32 @@
       return;
     }
 
+    // Offset starting markers that share the same starting location on the same day so they don't stack invisibly on top of each other.
+    // This is useful if there are two rides with the same route and the same starting point (not common, but possible).
+    // A small diagonal offset (~75m) is applied in opposite directions for the pair.
+    const OFFSET_LAT = 0.00048; // ~53m north/south component
+    const OFFSET_LNG = 0.00062; // ~53m east/west component (~75m diagonal at Boulder's latitude ~40°N)
+
+    const startKey = r => `${r.starting_location[0].toFixed(5)},${r.starting_location[1].toFixed(5)}`;
+
+    const startGroups = {};
+    routes.forEach(ride => {
+      const key = startKey(ride);
+      if (!startGroups[key]) startGroups[key] = [];
+      startGroups[key].push(ride);
+    });
+
+    Object.values(startGroups).forEach(group => {
+      if (group.length !== 2) return;
+      group[0].starting_location[0] -= OFFSET_LAT;
+      group[0].starting_location[1] -= OFFSET_LNG;
+      group[1].starting_location[0] += OFFSET_LAT;
+      group[1].starting_location[1] += OFFSET_LNG;
+    });
+
     // Palette of colors (will cycle if more routes in a day than colors)
     const colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown', 'pink'];
-    
+
     // Collect all polylines
     const fg = L.featureGroup().addTo(map);
 
