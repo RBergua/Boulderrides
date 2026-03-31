@@ -623,7 +623,7 @@
                 color: lineColor,
                 weight,
                 opacity,
-                dashArray: seg.surface === 'unpaved' ? '8, 8' : null
+                dashArray: seg.surface === 'unpaved' ? '3, 6' : null // dashed line for unpaved. 3, 6 makes dashes (3px line, 6px gap).
               }).addTo(targetGroup)
             );
           } else {
