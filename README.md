@@ -20,7 +20,8 @@ It aggregates **Strava club events** and displays upcoming rides by day.
 
 - **7-day calendar** — Quickly see which days have scheduled rides; the first day with rides loads automatically
 - **Interactive map** — Routes are drawn as color-coded polylines using [Leaflet.js](https://leafletjs.com/) with MapTiler and an automatic fallback to OpenStreetMap
-- **Desktop** — Hover over a route to highlight it and dim the others, showing the club name, ride title, start time, and whether the ride is women-only; click to open the Strava event in a new tab
+- **Paved vs unpaved surfaces** — Routes are drawn as solid lines on paved surfaces and dashed lines on unpaved surfaces
+- **Desktop** — Hover over a route to highlight it and dim the others to gray, showing the club name, ride title, start time, and whether the ride is women-only; click to open the Strava event in a new tab
 - **Mobile** — Tap a route to see its details in a bottom sheet; tap "Open in Strava" to view the event; swipe the panel down (or tap the map background) to dismiss it
 - **Auto-fit bounds** — The map zooms to fit all routes for the selected day
 
@@ -50,15 +51,28 @@ Ride data is automatically fetched from the Strava API by a backend process that
 ```json
 [
   {
+    "club_id": 575042,
     "club_name": "Rapha Boulder",
     "title": "Social Ride",
     "date": "2026-03-08 10:00",
     "url": "https://example.com/ride",
+    "starting_location": [
+      40.016888,
+      -105.285529
+    ],
     "women_only": false,
-    "starting_location": [40.0150, -105.2705],
+    "route_id": 3471700207861648642,
     "route": [
-      [40.0150, -105.2705],
-      [40.0200, -105.2600],
+      [
+        40.01962,
+        -105.27153,
+        "paved"
+      ],
+      [
+        40.0195,
+        -105.27212,
+        "unpaved"
+      ],
       ...
     ]
   }
@@ -67,13 +81,15 @@ Ride data is automatically fetched from the Strava API by a backend process that
 
 | Field | Type | Description |
 |---|---|---|
+| `club_id` | number | Strava club ID |
 | `club_name` | string | Name of the organizing club |
 | `title` | string | Ride name |
 | `date` | string | `"YYYY-MM-DD HH:MM"` in 24-hour format; displayed as 12-hour (AM/PM) in the frontend |
 | `url` | string | Link to the Strava ride event |
 | `women_only` | boolean | If `true`, shown in the description |
 | `starting_location` | `[lat, lng]` | Start marker position (optional; if not available, it uses the first point in `route`) |
-| `route` | `[[lat, lng], ...]` | Array of latitude and longitude coordinates defining the route |
+| `route_id` | number | Strava route ID |
+| `route` | `[[lat, lng, surface], ...]` | Array of latitude and longitude coordinates defining the route; each point includes a surface tag (`"paved"` or `"unpaved"`) |
 
 ## Project Structure
 
@@ -95,7 +111,7 @@ Ride data is automatically fetched from the Strava API by a backend process that
 - [Leaflet.js](https://leafletjs.com/) — Interactive maps
 - [MapTiler](https://www.maptiler.com/) — Outdoor/terrain map tiles (primary)
 - [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) — Extends MapTiler tile cache from the deault 8 hours to 90 days, saving API requests and making the map load faster for returning visitors (tiles served from disk instead of the network)
-- [OpenStreetMap](https://www.openstreetmap.org/) — Map tiles (fallback if MapTiler quota is exceeded or unavailable)
+- [OpenStreetMap](https://www.openstreetmap.org/) — Map tiles (fallback if MapTiler quota is exceeded or unavailable); also the road surface data source used for paved/unpaved classification, queried via the [Overpass API](https://overpass-api.de/) by the backend
 - [Strava API](https://developers.strava.com/) — Source of group ride data, fetched by the backend
 - [GoatCounter](https://www.goatcounter.com/) — Privacy-friendly analytics
 

@@ -274,13 +274,16 @@
 
     <h2>How to use it</h2>
     <p>
-      <strong>Days with rides</strong> are highlighted in the calendar at the top. Tap any day to load its routes onto the map.
+      <strong>Days with rides</strong> are highlighted in the calendar at the top. The first available day is selected automatically when the page loads. Tap any other day to load its routes onto the map.
     </p>
     <p>
-      <strong>On desktop:</strong> hover over a route to highlight it and dim the others, showing the club's name, ride title, and start time. Click to open the Strava event.
+      Routes are drawn as <strong>solid lines on paved surfaces</strong> and <strong>dashed lines on unpaved (e.g., gravel) surfaces</strong>.
     </p>
     <p>
-      <strong>On mobile:</strong> tap a route to see its details in the panel at the bottom, then tap "Open in Strava" to view it. Swipe the panel down or tap the map to dismiss it.
+      <strong>On desktop:</strong> hover over a route to highlight it, dim all others to gray, and show the club's name, ride title, and start time. Click to open the Strava event.
+    </p>
+    <p>
+      <strong>On mobile:</strong> tap a route to see its details in the panel at the bottom, then tap "Open in Strava" to view it. Swipe the panel down or tap anywhere on the map to dismiss it.
     </p>
 
     <hr>
@@ -473,15 +476,66 @@
     sheet.classList.remove("open");
     infoBtnEl.classList.remove("sheet-open");
     document.querySelector('.leaflet-control-attribution').classList.remove('hidden');
-    if (currentHL) { currentHL.setStyle({ weight: 5, opacity: 0.85 }); currentHL = null; }
+    if (currentHL) { currentHL.forEach(l => l.setStyle({ weight: 5, opacity: 0.85 })); currentHL = null; }
   }
 
   let currentHL = null;
 
   // -------------------------------
+  // Flag to enable/disable paved vs unpaved surface rendering.
+  // true  → paved = solid line, unpaved = dashed line
+  // false → all routes drawn as a single continuous solid line
+  // -------------------------------
+  const SHOW_SURFACE = true;
+
+  // -------------------------------
+  // Split a route into contiguous segments by surface type.
+  // Each segment: { latlngs: [[lat, lng], ...], surface: 'paved'|'unpaved' }
+  // Only used when SHOW_SURFACE is true.
+  //
+  // Step 1 — smooth: **isolated single unpaved points flanked by paved on both
+  // sides are promoted to paved**. They can't form a visible dashed line and are
+  // almost certainly misclassifications. Two or more consecutive unpaved points
+  // are left alone as a genuine unpaved stretch.
+  //
+  // Step 2 — split: route is cut into contiguous same-surface segments.
+  // Each segment overlaps by one point with the next so polylines connect
+  // seamlessly without gaps. A Leaflet polyline needs at least 2 points to
+  // draw a visible line.
+  // -------------------------------
+  function splitBySurface(route) {
+    // Step 1: smooth out isolated single unpaved points (one unpaved point flanked by paved on both sides).
+    // These cannot form a visible dashed line and are almost certainly misclassifications.
+    // Two or more consecutive unpaved points are left alone as a genuine unpaved stretch.
+    const surfaces = route.map(pt => pt[2]);
+    const smoothed = surfaces.slice(); // copy
+    for (let i = 1; i < surfaces.length - 1; i++) {
+      if (surfaces[i] === 'unpaved' && surfaces[i-1] === 'paved' && surfaces[i+1] === 'paved') {
+        smoothed[i] = 'paved';
+      }
+    }
+
+    // Step 2: split into contiguous segments, overlapping by 1 point at boundaries
+    // so consecutive polylines connect seamlessly with no gaps.
+    const segments = [];
+    let start = 0;
+    for (let i = 1; i <= route.length; i++) {
+      if (i === route.length || smoothed[i] !== smoothed[start]) {
+        const end = Math.min(i + 1, route.length); // overlap: include first point of next segment
+        segments.push({
+          latlngs: route.slice(start, end).map(pt => [pt[0], pt[1]]),
+          surface: smoothed[start]
+        });
+        start = i;
+      }
+    }
+    return segments;
+  }
+
+  // -------------------------------
   // Function to draw routes for a given date
   // Desktop: hover to show tooltip, click to open URL
-  // Mobile: first tap shows tooltip, second tap opens URL
+  // Mobile: tap route to show bottom sheet slides up with details
   // -------------------------------
   function loadRoutes(date) {
 
@@ -505,20 +559,27 @@
       return;
     }
 
-    // Palette of colors (will cycle if more routes than colors)
+    // Palette of colors (will cycle if more routes in a day than colors)
     const colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown', 'pink'];
     
     // Collect all polylines
     const fg = L.featureGroup().addTo(map);
 
     const allVisibleLayers = []; // collect all desktop visible lines + markers
+    
     routes.forEach((ride, idx) => {
       if (ride.route && ride.route.length > 0) {
         const color = colors[idx % colors.length]; // cycle colors if more routes than colors
         ride.color = color; // store so openSheet can use it
         const rideTime = formatTime12h(ride.date.split(" ")[1]); // convert time to 12-hour format (AM/PM)
 
-        // Tooltip (only shown on desktop)
+        // Flat [lat, lng] array for the full route — used for hit area and bounds fitting
+        const allLatLngs = ride.route.map(pt => [pt[0], pt[1]]);
+
+        // Start marker coordinate: prefer explicit starting_location, fall back to first route point
+        const start = ride.starting_location || allLatLngs[0];
+
+        // Tooltip (only shown on desktop on hover)
         const tooltipContent = `
           <div style="font-size:1.6em; font-weight:700; text-transform:uppercase; color:#111; line-height:1.3; margin-bottom:6px;">${ride.club_name}</div>
           <div style="font-size:1.4em; color:#888; margin-bottom:12px;">${ride.title}</div>
@@ -527,28 +588,51 @@
             ${ride.women_only ? '<span style="background:#f3f0ff; color:#6f42c1; border:1px solid #d0c4f7; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">Women only</span>' : ''}
           </div>`;
 
+        // -------------------------------------------------------
+        // Build the visible polyline(s):
+        // SHOW_SURFACE=true  → one polyline per surface segment (solid/dashed)
+        // SHOW_SURFACE=false → one single solid polyline for the whole route
+        // -------------------------------------------------------
+        function buildVisibleLines(targetGroup, lineColor, weight, opacity) {
+          if (SHOW_SURFACE) {
+            return splitBySurface(ride.route).map(seg =>
+              L.polyline(seg.latlngs, {
+                color: lineColor,
+                weight,
+                opacity,
+                dashArray: seg.surface === 'unpaved' ? '8, 8' : null
+              }).addTo(targetGroup)
+            );
+          } else {
+            return [L.polyline(allLatLngs, { color: lineColor, weight, opacity }).addTo(targetGroup)];
+          }
+        }
+
         if (isTouchDevice) {
           // -------------------------------------------------------
           // MOBILE: tap route → bottom sheet slides up with details
           // -------------------------------------------------------
 
-          // Visible polyline
-          const vl = L.polyline(ride.route, { color, weight: 5, opacity: 0.85 }).addTo(fg);
+          // Visible segment lines (solid or dashed per surface)
+          const segmentLines = buildVisibleLines(fg, color, 5, 0.85);
 
-          // Wide invisible hit area for easier tapping
-          const hitArea = L.polyline(ride.route, { weight: 40, opacity: 0, interactive: true }).addTo(fg);
+          // Wide invisible polyline over the full route for easier finger tapping
+          // Added AFTER segmentLines so it sits on top and captures touch events reliably
+          const hitArea = L.polyline(allLatLngs, { weight: 40, opacity: 0, interactive: true }).addTo(fg);
 
+          // Tap handler: highlight this route and open the bottom sheet
           const tapHandler = (e) => {
             L.DomEvent.stopPropagation(e);
-            if (currentHL && currentHL !== vl) currentHL.setStyle({ weight: 5, opacity: 0.85 });
-            vl.setStyle({ weight: 6.5, opacity: 1 });
-            currentHL = vl;
+            // Restore previous highlighted route (if any) to normal style
+            if (currentHL) currentHL.forEach(l => l.setStyle({ weight: 5, opacity: 0.85 }));
+            // Highlight all segments of this route
+            segmentLines.forEach(l => l.setStyle({ weight: 6.5, opacity: 1 }));
+            currentHL = segmentLines; // store reference so we can un-highlight later
             openSheet(ride);
           };
           hitArea.on('click', tapHandler);
 
-          // Start marker
-          const start = ride.starting_location || ride.route[0];
+          // Start marker (also opens the sheet when tapped)
           L.circleMarker(start, { radius: 7, color, fillColor: color, fillOpacity: 1, weight: 2 })
             .addTo(fg).on('click', (e) => { L.DomEvent.stopPropagation(e); tapHandler(e); });
 
@@ -558,69 +642,65 @@
           // Hover highlights the route, dims others, click opens Strava.
           // -------------------------------------------------------
 
-          // Wide invisible hit area for easier hovering/clicking
-          const hitArea = L.polyline(ride.route, { weight: 20, opacity: 0 }).addTo(fg);
+          // Visible segment lines (solid or dashed per surface)
+          // Added FIRST so the hit area (added next) sits on top and captures mouse events
+          const segmentLines = buildVisibleLines(fg, color, 4, 0.8);
+
+          // Wide invisible polyline for easier mouse hovering/clicking. Added ON TOP of segment lines
+          const hitArea = L.polyline(allLatLngs, { weight: 20, opacity: 0 }).addTo(fg);
           hitArea.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
 
-          // Visible polyline
-          const visibleLine = L.polyline(ride.route, { color: color, weight: 4, opacity: 0.8 }).addTo(fg);
-          visibleLine.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
-
-          // Start marker
-          const start = ride.starting_location || ride.route[0];
-          const marker = L.circleMarker(start, { radius: 6, color: color, fillColor: color, fillOpacity: 1 }).addTo(fg);
+          // Start marker (on top of everything for this route)
+          const marker = L.circleMarker(start, { radius: 6, color, fillColor: color, fillOpacity: 1 }).addTo(fg);
           marker.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
 
-          // Store for cross-route dimming (including color for restoration)
-          allVisibleLayers.push({ visibleLine, marker, color });
+          // Store segment lines, marker, and original color for cross-route dimming
+          allVisibleLayers.push({ segmentLines, marker, color });
+
+          // Hover on: thicken this route, gray out all others
           const onOver = () => {
-            visibleLine.setStyle({ weight: 7, opacity: 1 });
+            segmentLines.forEach(l => l.setStyle({ weight: 7, opacity: 1 }));
             marker.setStyle({ weight: 3, fillOpacity: 1, opacity: 1 });
-            // Turn all other routes gray
             allVisibleLayers.forEach(l => {
-              if (l.visibleLine !== visibleLine) {
-                l.visibleLine.setStyle({ opacity: 0.5, weight: 3, color: 'gray' });
+              if (l.segmentLines !== segmentLines) {
+                l.segmentLines.forEach(s => s.setStyle({ opacity: 0.5, weight: 3, color: 'gray' }));
                 l.marker.setStyle({ fillOpacity: 0.5, opacity: 0.5, color: 'gray', fillColor: 'gray' });
               }
             });
           };
 
+          // Hover off: restore all routes to their original color and weight
           const onOut = () => {
-            // Restore all routes to their original color
             allVisibleLayers.forEach(l => {
-              l.visibleLine.setStyle({ weight: 4, opacity: 0.8, color: l.color });
+              l.segmentLines.forEach(s => s.setStyle({ weight: 4, opacity: 0.8, color: l.color }));
               l.marker.setStyle({ fillOpacity: 1, opacity: 1, weight: 1, color: l.color, fillColor: l.color });
             });
           };
-          hitArea.on('mouseover', onOver);
-          hitArea.on('mouseout',  onOut);
-          hitArea.on('click', () => { if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer'); });
-                  
-          visibleLine.on('mouseover', onOver);
-          visibleLine.on('mouseout',  onOut);
-          visibleLine.on('click', () => { if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer'); });
-                  
-          marker.on('mouseover', onOver);
-          marker.on('mouseout',  onOut);
-          marker.on('click', () => { if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer'); });
-        }          
+
+          // Click: open Strava event in a new tab
+          const onClick = () => { if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer'); };
+
+          // hitArea handles all mouse events (it sits on top of segment lines)
+          hitArea.on('mouseover', onOver).on('mouseout', onOut).on('click', onClick);
+          // Marker needs its own handlers since it's outside the hitArea
+          marker.on('mouseover', onOver).on('mouseout', onOut).on('click', onClick);
+        }
       }
     });
 
-    // Fit to all polylines
+    // Fit map to show all routes, with 5% padding on each side
     const bounds = fg.getBounds();
     if (bounds.isValid()) {
-      // Dynamic padding based on map size (5% of width/height)
       const mapSize = map.getSize();
       const padX = Math.round(mapSize.x * 0.05);
       const padY = Math.round(mapSize.y * 0.05);
       map.fitBounds(bounds, {
         paddingTopLeft: [padX, padY],
-        paddingBottomRight: [padX, padY],      
+        paddingBottomRight: [padX, padY],
         maxZoom: defaultZoom // Fit to bounds but don't zoom in more than defaultZoom
       });
     }
-  }   
+  }
 
   // -------------------------------
   // Generate 7-day calendar
