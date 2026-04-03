@@ -332,6 +332,21 @@
   }
 
   // -------------------------------
+  // Cool start markers with colored pin and white center
+  // -------------------------------
+  function createPinMarker(latlng, color) {
+    const html = `
+      <svg width="24" height="32" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0 C5.4 0 0 5.4 0 12 C0 21 12 32 12 32 C12 32 24 21 24 12 C24 5.4 18.6 0 12 0 Z"
+            fill="${color}" stroke="white" stroke-width="1.5"/>
+        <circle cx="12" cy="12" r="5" fill="white"/>
+      </svg>`;
+    return L.marker(latlng, {
+      icon: L.divIcon({ html, className: '', iconSize: [24, 32], iconAnchor: [12, 32] }) // iconSize: pin dimensions in pixels. // iconAnchor: [12, 32] (horizontal center, full height) ensures the tip of the pin points exactly to the starting location.
+    });
+  }
+
+  // -------------------------------
   // Initialize Leaflet map
   // -------------------------------
   const defaultCenter = [40.01499, -105.27055]; // Boulder, CO. [Lat, Long]
@@ -547,9 +562,9 @@
     console.log("Selected date:", date);
     console.log("Dates with rides:", Object.keys(ridesByDate));
 
-    // Remove old polylines
+    // Remove old polylines and markers
     map.eachLayer(layer => {
-      if (layer instanceof L.Polyline || layer instanceof L.CircleMarker) {
+      if (layer instanceof L.Polyline || layer instanceof L.Marker) {
         map.removeLayer(layer);
       }
     });
@@ -658,7 +673,7 @@
           hitArea.on('click', tapHandler);
 
           // Start marker (also opens the sheet when tapped)
-          L.circleMarker(start, { radius: 7, color, fillColor: color, fillOpacity: 1, weight: 2 })
+          createPinMarker(start, color)
             .addTo(fg).on('click', (e) => { L.DomEvent.stopPropagation(e); tapHandler(e); });
 
         } else {
@@ -676,7 +691,7 @@
           hitArea.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
 
           // Start marker (on top of everything for this route)
-          const marker = L.circleMarker(start, { radius: 6, color, fillColor: color, fillOpacity: 1 }).addTo(fg);
+          const marker = createPinMarker(start, color).addTo(fg);
           marker.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
 
           // Store segment lines, marker, and original color for cross-route dimming
@@ -685,11 +700,9 @@
           // Hover on: thicken this route, gray out all others
           const onOver = () => {
             segmentLines.forEach(l => l.setStyle({ weight: 7, opacity: 1 }));
-            marker.setStyle({ weight: 3, fillOpacity: 1, opacity: 1 });
             allVisibleLayers.forEach(l => {
               if (l.segmentLines !== segmentLines) {
                 l.segmentLines.forEach(s => s.setStyle({ opacity: 0.5, weight: 3, color: 'gray' }));
-                l.marker.setStyle({ fillOpacity: 0.5, opacity: 0.5, color: 'gray', fillColor: 'gray' });
               }
             });
           };
@@ -698,7 +711,6 @@
           const onOut = () => {
             allVisibleLayers.forEach(l => {
               l.segmentLines.forEach(s => s.setStyle({ weight: 4, opacity: 0.8, color: l.color }));
-              l.marker.setStyle({ fillOpacity: 1, opacity: 1, weight: 1, color: l.color, fillColor: l.color });
             });
           };
 
