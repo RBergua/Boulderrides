@@ -34526,8 +34526,8 @@
     "date": "2026-04-04 10:00",
     "url": "https://www.strava.com/clubs/815/group_events/3474165538852784122",
     "starting_location": [
-      40.063028,
-      -105.279304
+      40.0203084,
+      -105.2184491
     ],
     "women_only": false,
     "route_id": 3474529321426598794,
@@ -41087,7 +41087,7 @@
   {
     "club_id": 1333942,
     "club_name": "303 VELO",
-    "title": "RAMP #1 - NCAR (31.8) - RSVP FOR FOOD/RAFFLE IN CLUB POST",
+    "title": "RAMP #1 - NCAR (31.8)",
     "date": "2026-04-05 09:00",
     "url": "https://www.strava.com/clubs/1333942/group_events/3473136734876097796",
     "starting_location": [
