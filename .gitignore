@@ -7,3 +7,4 @@ event_log.json
 .env
 strava_env/
 Strava_requests.py
+manifest.json
