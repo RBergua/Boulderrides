@@ -10,7 +10,8 @@
     {
       "src": "/assets/icons/apple-touch-icon.png",
       "sizes": "1024x1024",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
