@@ -520,10 +520,14 @@
     sheet.classList.remove("open");
     infoBtnEl.classList.remove("sheet-open");
     document.querySelector('.leaflet-control-attribution').classList.remove('hidden');
-    if (currentHL) { currentHL.forEach(l => l.setStyle({ weight: 5, opacity: 0.85 })); currentHL = null; }
+    if (currentHL) {
+      restoreAllRoutes(); // restore all routes to default style when sheet is dismissed
+      currentHL = null;
+    }
   }
 
-  let currentHL = null;
+  let currentHL = null; // reference to the currently highlighted route's segment lines (mobile only)
+  let restoreAllRoutes = null; // assigned inside loadRoutes, called by closeSheet on sheet dismiss
 
   // -------------------------------
   // Flag to enable/disable paved vs unpaved surface rendering.
@@ -632,7 +636,37 @@
     // Collect all polylines
     const fg = L.featureGroup().addTo(map);
 
-    const allVisibleLayers = []; // collect all desktop visible lines + markers
+    const allVisibleLayers = []; // collect all route layers line lines and markers (used by both desktop and mobile)
+
+    // Shared helper: highlight one route and dim all others.
+    // Used by desktop onOver and mobile tapHandler.
+    function highlightRoute(activeSegmentLines) {
+      allVisibleLayers.forEach(l => {
+        if (l.segmentLines === activeSegmentLines) {
+          // Highlight the active route
+          l.segmentLines.forEach(s => s.setStyle({ weight: l.isMobile ? 6.5 : 7, opacity: 1 }));
+        } else {
+          // Dim all other routes
+          l.segmentLines.forEach(s => s.setStyle({ opacity: 0.5, weight: 3, color: 'gray' }));
+          l.whitelines.forEach(w => w.setStyle({ opacity: 0 })); // hide white base so it doesn't cover the highlighted route or appear as white-ish in the dimmed routes
+          if (l.color !== 'black') { // for all colors except black
+            l.marker.getElement()?.style.setProperty('filter', 'grayscale(1) opacity(0.5)'); // grayscale(1) drains the color, opacity(0.5) dims it. This matches the feel of the grayed-out polylines
+          } else {
+            l.marker.getElement()?.style.setProperty('filter', 'opacity(0.4)');
+          }
+        }
+      });
+    }
+
+    // Shared helper: restore all routes to their default style.
+    // Used by desktop onOut and mobile closeSheet.
+    restoreAllRoutes = function() {
+      allVisibleLayers.forEach(l => {
+        l.segmentLines.forEach(s => s.setStyle({ weight: l.isMobile ? 5 : 4, opacity: l.isMobile ? 0.85 : 0.8, color: l.color }));
+        l.whitelines.forEach(w => w.setStyle({ opacity: 1 })); // restore white base lines
+        l.marker.getElement()?.style.removeProperty('filter'); // restore marker color and opacity
+      });
+    }
     
     routes.forEach((ride, idx) => {
       if (ride.route && ride.route.length > 0) {
@@ -700,21 +734,23 @@
           // Added AFTER segmentLines so it sits on top and captures touch events reliably
           const hitArea = L.polyline(allLatLngs, { weight: 40, opacity: 0, interactive: true }).addTo(fg);
 
-          // Tap handler: highlight this route and open the bottom sheet
+          // Tap handler: highlight this route, dim all others, open the bottom sheet
           const tapHandler = (e) => {
             L.DomEvent.stopPropagation(e);
-            // Restore previous highlighted route (if any) to normal style
-            if (currentHL) currentHL.forEach(l => l.setStyle({ weight: 5, opacity: 0.85 }));
-            // Highlight all segments of this route
-            segmentLines.forEach(l => l.setStyle({ weight: 6.5, opacity: 1 }));
-            currentHL = segmentLines; // store reference so we can un-highlight later
+            restoreAllRoutes(); // restore any previously highlighted route (if any) to normal style
+            highlightRoute(segmentLines); // highlight this route and dim all others
+            currentHL = segmentLines; // store reference so closeSheet can restore on dismiss
             openSheet(ride);
           };
           hitArea.on('click', tapHandler);
 
           // Start marker (also opens the sheet when tapped)
-          createPinMarker(start, color)
+          const marker = createPinMarker(start, color)
             .addTo(fg).on('click', (e) => { L.DomEvent.stopPropagation(e); tapHandler(e); });
+
+          // Store segment lines, whitelines, and marker for cross-route dimming (shared with desktop logic)
+          // isMobile flag lets the shared helpers apply the correct weights
+          allVisibleLayers.push({ segmentLines, whitelines, marker, color, isMobile: true });
 
         } else {
           // -------------------------------------------------------
@@ -734,34 +770,18 @@
           const marker = createPinMarker(start, color).addTo(fg);
           marker.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
 
-          // Store segment lines, whitelines,marker, and original color for cross-route dimming
-          allVisibleLayers.push({ segmentLines, whitelines, marker, color });
+          // Store segment lines, whitelines, marker, and original color for cross-route dimming
+          // isMobile: false lets the shared helpers apply desktop weights and marker filters
+          allVisibleLayers.push({ segmentLines, whitelines, marker, color, isMobile: false });
 
-          // Hover on: thicken this route, gray out all others
+          // Hover on: highlight this route and dim all others (shared logic with mobile)
           const onOver = () => {
-            segmentLines.forEach(l => l.setStyle({ weight: 7, opacity: 1 }));
+            highlightRoute(segmentLines);
             marker.setOpacity(1); // ensure marker is fully visible (may have been dimmed by a previous hover)
-            allVisibleLayers.forEach(l => {
-              if (l.segmentLines !== segmentLines) {
-                l.segmentLines.forEach(s => s.setStyle({ opacity: 0.5, weight: 3, color: 'gray' }));
-                l.whitelines.forEach(w => w.setStyle({ opacity: 0 })); // hide white base so it doesn't cover the highlighted route or appear as white-ish in the dimmed routes
-                if (l.color !== 'black') { // For all colors except black
-                  l.marker.getElement()?.style.setProperty('filter', 'grayscale(1) opacity(0.5)'); // grayscale(1) drains the color, opacity(0.5) dims it. This matches the feel of the grayed-out polylines
-                } else {
-                  l.marker.getElement()?.style.setProperty('filter', 'opacity(0.4)');
-                }
-              }
-            });
           };
 
-          // Hover off: restore all routes and markers for the starting point to their original color and weight
-          const onOut = () => {
-            allVisibleLayers.forEach(l => {
-              l.segmentLines.forEach(s => s.setStyle({ weight: 4, opacity: 0.8, color: l.color }));
-              l.whitelines.forEach(w => w.setStyle({ opacity: 1 })); // restore white base lines
-              l.marker.getElement()?.style.removeProperty('filter');
-            });
-          };
+          // Hover off: restore all routes to their default style (shared logic with mobile)
+          const onOut = () => restoreAllRoutes();
 
           // Click: open Strava event in a new tab
           const onClick = () => { if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer'); };
