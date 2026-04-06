@@ -8,12 +8,44 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Progressive Web App (Android) to feel like an app-->
+   <link rel="manifest" href="/manifest.json">
+
+  <!-- Enable standalone app mode -->
+  <meta name="mobile-web-app-capable" content="yes"> <!-- Android (legacy) -->
+  <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iOS -->
+
+  <!-- App name (iOS home screen) -->
+  <meta name="apple-mobile-web-app-title" content="Boulder Rides">
+
+  <!-- Status bar -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- Theme color (Android + some browsers) -->
+  <meta name="theme-color" content="#000000">
+
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+
+  <!-- iOS home screen icon -->
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="/manifest.json"> <!-- Icon for Android devices -->
+
+  <!-- iPhone Pro Max (best coverage for large phones) -->
+  <link rel="apple-touch-startup-image"
+        href="/assets/splash/iphone-promax.png"
+        media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+
+  <!-- Splash screen: modern iPhones -->
+  <link rel="apple-touch-startup-image"
+        href="/assets/splash/iphone-modern.png"
+        media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+
+  <!-- Splash screen: slightly older iPhones with smaller screens -->
+  <link rel="apple-touch-startup-image"
+        href="/assets/splash/iphone-older.png"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
 
   <!-- Leaflet CSS -->
   <!-- If a future version breaks the map, use this link instead: https://unpkg.com/leaflet@1.9.4/dist/leaflet.css --> 
