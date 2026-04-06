@@ -660,6 +660,7 @@
         // SHOW_SURFACE=true  → one polyline per surface segment (solid/dashed)
         // SHOW_SURFACE=false → one single solid polyline for the whole route
         // -------------------------------------------------------
+        const whitelines = []; // white base lines under unpaved segments
         function buildVisibleLines(targetGroup, lineColor, weight, opacity) {
           if (SHOW_SURFACE) {
             return splitBySurface(ride.route).flatMap(seg => {
@@ -667,12 +668,13 @@
                 // White base line first, then colored dashes on top.
                 // If we just use dashed lines, when two unpaved segments overlap (e.g., out and back, loops...), 
                 // the two (or more) dashes would appear on top of each other and often merge into a solid line.
-                L.polyline(seg.latlngs, {
+                const whiteLine = L.polyline(seg.latlngs, {
                   color: 'white',
                   weight: weight + 2,
                   opacity: 1,
                   interactive: false
                 }).addTo(targetGroup);
+                whitelines.push(whiteLine);
               }
               return L.polyline(seg.latlngs, {
                 color: lineColor,
@@ -732,16 +734,17 @@
           const marker = createPinMarker(start, color).addTo(fg);
           marker.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
 
-          // Store segment lines, marker, and original color for cross-route dimming
-          allVisibleLayers.push({ segmentLines, marker, color });
+          // Store segment lines, whitelines,marker, and original color for cross-route dimming
+          allVisibleLayers.push({ segmentLines, whitelines, marker, color });
 
           // Hover on: thicken this route, gray out all others
           const onOver = () => {
             segmentLines.forEach(l => l.setStyle({ weight: 7, opacity: 1 }));
-            marker.setOpacity(1); // marker for the starting point
+            marker.setOpacity(1); // ensure marker is fully visible (may have been dimmed by a previous hover)
             allVisibleLayers.forEach(l => {
               if (l.segmentLines !== segmentLines) {
                 l.segmentLines.forEach(s => s.setStyle({ opacity: 0.5, weight: 3, color: 'gray' }));
+                l.whitelines.forEach(w => w.setStyle({ opacity: 0 })); // hide white base so it doesn't cover the highlighted route or appear as white-ish in the dimmed routes
                 if (l.color !== 'black') { // For all colors except black
                   l.marker.getElement()?.style.setProperty('filter', 'grayscale(1) opacity(0.5)'); // grayscale(1) drains the color, opacity(0.5) dims it. This matches the feel of the grayed-out polylines
                 } else {
@@ -755,6 +758,7 @@
           const onOut = () => {
             allVisibleLayers.forEach(l => {
               l.segmentLines.forEach(s => s.setStyle({ weight: 4, opacity: 0.8, color: l.color }));
+              l.whitelines.forEach(w => w.setStyle({ opacity: 1 })); // restore white base lines
               l.marker.getElement()?.style.removeProperty('filter');
             });
           };
