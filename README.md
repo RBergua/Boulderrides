@@ -64,6 +64,8 @@ Ride data is automatically fetched from the Strava API by a backend process that
     ],
     "women_only": false,
     "route_id": 3471700207861648642,
+    "distance": 24.8,
+    "elevation_gain": 1247,
     "route": [
       [
         40.01962,
@@ -91,7 +93,9 @@ Ride data is automatically fetched from the Strava API by a backend process that
 | `women_only` | boolean | If `true`, shown in the description |
 | `starting_location` | `[lat, lng]` | Start marker position (optional; if not available, it uses the first point in `route`) |
 | `route_id` | number | Strava route ID |
-| `route` | `[[lat, lng, surface], ...]` | Array of latitude and longitude coordinates defining the route; each point includes a surface tag (`"paved"` or `"unpaved"`) |
+| `distance` | number | Route distance in miles (1 decimal); `null` if unavailable |
+| `elevation_gain` | number | Total elevation gain in feet (integer); `null` if unavailable |
+| `route` | `[[lat, lng, surface], ...]` | Array of latitude and longitude coordinates defining the route; each point includes a surface tag (`"paved"` or `"unpaved"`), or `null` if the OpenStreetMap surface classification failed |
 
 ## Project Structure
 
