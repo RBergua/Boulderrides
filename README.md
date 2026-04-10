@@ -20,6 +20,7 @@ It aggregates **Strava club events** and displays upcoming rides by day.
 
 - **7-day calendar** — Quickly see which days have scheduled rides; the first day with rides loads automatically
 - **Interactive map** — Routes are drawn as color-coded polylines using [Leaflet.js](https://leafletjs.com/) with MapTiler and an automatic fallback to OpenStreetMap
+- **Metric/Imperial units** — Bottom-left **Metric** button switches between miles/feet ↔ km/meters; updates tooltips and mobile sheets instantly (imperial by default)
 - **Paved vs unpaved surfaces** — Routes are drawn as solid lines on paved surfaces and dashed lines on unpaved surfaces
 - **Start pin markers** — A colored pin marks the starting location of each ride
 - **Desktop** — Hover over a route or its start pin to highlight it and dim the others to gray, showing the club name, ride title, start time, and whether the ride is women-only; click to open the Strava event in a new tab

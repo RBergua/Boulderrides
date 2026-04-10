@@ -139,7 +139,7 @@
 
     #info-btn {
       position: fixed;
-      bottom: 24px;
+      bottom: 64px;
       left: 16px;
       z-index: 1000;
       background: #007bff;
@@ -147,6 +147,7 @@
       border: none;
       border-radius: 20px;
       padding: 8px 16px;
+      min-width: 72px;  /* Forces "More" to match "Metric" width */
       font-size: 0.9em;
       font-family: Arial, sans-serif;
       font-weight: bold;
@@ -155,6 +156,34 @@
       transition: background 0.2s;
     }
     #info-btn:hover { background: #0056b3; }
+
+    #metric-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 16px;
+      z-index: 1000;
+      background: #777; /* gray background when not selected */
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      min-width: 72px;  /* Matches "More" button width */
+      font-size: 0.9em;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    #metric-btn.active {
+      background: #007bff; /* blue background when selected */
+      color: #fff;
+    }
+
+    #metric-btn:active {
+      transform: scale(0.98);
+    }
 
     /* ── Full-screen info page ── */
     #info-page {
@@ -246,10 +275,12 @@
     #sheet-strava-btn:active { background: #e04400; transform: scale(0.98); }
     #sheet-strava-btn.no-url { background: #ccc; cursor: default; }
 
-    /* Info button and map attribution hides behind sheet when open */
+    /* Info button, metric button, and map attribution hide behind sheet when open */
     @media (pointer: coarse) {
       #info-btn { transition: background 0.2s, bottom 0.3s ease; }
       #info-btn.sheet-open { opacity: 0; pointer-events: none; }
+      #metric-btn { transition: background 0.2s, bottom 0.3s ease; }
+      #metric-btn.sheet-open { opacity: 0; pointer-events: none; }
       .leaflet-control-attribution { transition: opacity 0.3s ease; font-size: 11px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 20px); }
       .leaflet-control-attribution.hidden { opacity: 0; pointer-events: none; }
     }
@@ -265,6 +296,9 @@
 
 <!-- More button (previously named "Info") -->
 <button id="info-btn" onclick="document.getElementById('info-page').classList.add('open')">More</button>
+
+<!-- Metric button (default units are imperial) -->
+<button id="metric-btn">Metric</button>
 
 <!-- Mobile bottom sheet -->
 <div id="ride-sheet">
@@ -347,6 +381,7 @@
     <p>
       The calendar at the top shows the next 7 days. Days with rides are highlighted in gray. The first day with rides is selected automatically when the page loads. Tap or click any other day to load its routes on the map.
     </p>
+    <p><strong>Units:</strong> Default is imperial (miles, feet). Tap the <strong>Metric</strong> button to switch to km and meters. Tap again to toggle back.</p>
     <p>
       Routes are drawn as <strong>solid lines on paved surfaces</strong> and <strong>dashed lines on unpaved (e.g., gravel) surfaces</strong>. A pin marks the start of each ride.
     </p>
@@ -543,6 +578,20 @@
   const sheetMeta  = document.getElementById("sheet-meta");
   const sheetBtn   = document.getElementById("sheet-strava-btn");
   const infoBtnEl  = document.getElementById("info-btn");
+  const metricBtn = document.getElementById('metric-btn');
+  let metricUnits = false; // Default to imperial units
+
+  metricBtn.addEventListener('click', () => { // Toggle Metric units on/off
+    metricUnits = !metricUnits;
+    if (metricUnits) metricBtn.classList.add('active');
+    else metricBtn.classList.remove('active');
+  
+  // Refresh current day's rides with new units
+  const selectedDay = document.querySelector('.selected');
+  if (selectedDay && selectedDay.dataset.date) {
+    loadRoutes(selectedDay.dataset.date);
+  }
+  });
 
   // Swipe down to close
   let touchStartY = 0;
@@ -568,8 +617,8 @@
     if (ride.distance != null || ride.elevation_gain != null) {
       const sb = document.createElement("span");
       sb.className = "sheet-badge";
-      const distPart  = ride.distance      != null ? `Distance: ${ride.distance.toFixed(1)} mi` : '';
-      const elevPart  = ride.elevation_gain != null ? `Elev Gain: ${ride.elevation_gain.toLocaleString()} ft` : '';
+      const distPart = ride.distance != null ? `Distance ${formatDistance(ride.distance)}` : ''; // Magnitude and units
+      const elevPart = ride.elevation_gain != null ? `Elev Gain ${formatElevation(ride.elevation_gain)}` : ''; // Magnitude and units
       sb.textContent  = [distPart, elevPart].filter(Boolean).join(' | ');
       sheetMeta.appendChild(sb);
     }
@@ -587,6 +636,7 @@
     requestAnimationFrame(() => {
       document.documentElement.style.setProperty("--sheet-height", sheet.offsetHeight + "px");
       infoBtnEl.classList.add("sheet-open");
+      metricBtn.classList.add("sheet-open");
       document.querySelector('.leaflet-control-attribution').classList.add('hidden');
     });
   }
@@ -594,6 +644,7 @@
   function closeSheet() {
     sheet.classList.remove("open");
     infoBtnEl.classList.remove("sheet-open");
+    metricBtn.classList.remove("sheet-open");
     document.querySelector('.leaflet-control-attribution').classList.remove('hidden');
     if (currentHL) {
       restoreAllRoutes(); // restore all routes to default style when sheet is dismissed
@@ -653,6 +704,21 @@
       }
     }
     return segments;
+  }
+
+  // -------------------------------
+  // Convert units based on Metric flag
+  // -------------------------------
+  function formatDistance(dist) {
+    return metricUnits 
+      ? (dist * 1.609344).toFixed(1) + ' km' // From miles to km
+      : dist.toFixed(1) + ' mi'; // The JSON file has already the units in miles
+  }
+
+  function formatElevation(elev) {
+    return metricUnits 
+      ? Math.round(elev * 0.3048).toLocaleString() + ' m' // From feet to meters 
+      : elev.toLocaleString() + ' ft'; // The JSON file has already the units in feet
   }
 
   // -------------------------------
@@ -765,13 +831,18 @@
 
         // Tooltip (only shown on desktop on hover)
         const tooltipContent = `
-          <div style="font-size:1.6em; font-weight:700; text-transform:uppercase; color:#111; line-height:1.3; margin-bottom:6px;">${ride.club_name}</div>
-          <div style="font-size:1.4em; color:#888; margin-bottom:12px;">${ride.title}</div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">${rideTime}</span>
-            ${(ride.distance != null || ride.elevation_gain != null) ? `<span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">${ride.distance != null ? `Distance: ${ride.distance.toFixed(1)} mi` : ''}${ride.distance != null && ride.elevation_gain != null ? ' | ' : ''}${ride.elevation_gain != null ? `Elev Gain: ${ride.elevation_gain.toLocaleString()} ft` : ''}</span>` : ''}
-            ${ride.women_only ? '<span style="background:#f3f0ff; color:#6f42c1; border:1px solid #d0c4f7; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">Women only</span>' : ''}
-          </div>`;
+        <div style="font-size:1.6em; font-weight:700; text-transform:uppercase; color:#111; line-height:1.3; margin-bottom:6px;">${ride.club_name}</div>
+        <div style="font-size:1.4em; color:#888; margin-bottom:12px;">${ride.title}</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">${rideTime}</span>
+          ${(ride.distance != null || ride.elevation_gain != null) ? 
+          '<span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">' +
+          (ride.distance != null ? `Distance: ${formatDistance(ride.distance)}` : '') +
+          (ride.distance != null && ride.elevation_gain != null ? ' | ' : '') +
+          (ride.elevation_gain != null ? `Elev Gain: ${formatElevation(ride.elevation_gain)}` : '') +
+          '</span>' : ''}
+          ${ride.women_only ? '<span style="background:#f3f0ff; color:#6f42c1; border:1px solid #d0c4f7; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">Women only</span>' : ''}
+        </div>`;
 
         // -------------------------------------------------------
         // Build the visible polyline(s):
@@ -938,6 +1009,8 @@
 
       col.appendChild(nameDiv);
       col.appendChild(dateDiv);
+
+      col.dataset.date = isoDate;  // Enables Metric toggle refresh
 
       col.onclick = () => {
         // Remove previous selection
