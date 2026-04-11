@@ -4,7 +4,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Boulder Group Rides</title>
+  <meta name="description" content="Find every group ride in Boulder County on one interactive map, updated twice daily from Strava.">
+  <title>Boulder Group Rides – All clubs, one map</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -324,6 +325,15 @@
     <p>
       Every group ride you're looking for, all in one place! This site pulls upcoming rides from the most active cycling clubs in Boulder County and displays them on an interactive map.
     </p>
+    <p style="font-size: 0.9em; color: #888;">
+      This project is free and runs 24/7 on a personal server. If it's gotten you out on a ride, you can support it:
+      <br>
+      <a href="https://buymeacoffee.com/rbergua" target="_blank" rel="noopener">
+        <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" style="margin-top: 6px;">
+      </a>
+      <br>
+      Every bit helps keep it alive!
+    </p>
  
     <hr>
 
@@ -333,7 +343,7 @@
     </p>
 
     <p>
-      A backend process pulls the latest events from the Strava API twice a day (12 PM &amp; 1 AM) and filters them down to rides that begin near Boulder. The data is always fresh and requires zero effort from the clubs themselves.
+      A backend process pulls the latest events from the Strava API twice a day (12 PM &amp; 1 AM) and filters them down to rides that begin near Boulder. The data is always updated and requires zero effort from the clubs themselves.
     </p>
 
     <hr>
@@ -379,17 +389,16 @@
 
     <h2>How to use it</h2>
     <p>
-      The calendar at the top shows the next 7 days. Days with rides are highlighted in gray. The first day with rides is selected automatically when the page loads. Tap or click any other day to load its routes on the map.
-    </p>
-    <p><strong>Units:</strong> default is imperial (miles, feet). Tap the "Metric" button to switch to km and meters. Tap again to toggle back.</p>
-    <p>
-      Routes are drawn as <strong>solid lines on paved surfaces</strong> and <strong>dashed lines on unpaved (e.g., gravel) surfaces</strong>. A pin marks the start of each ride.
+      <strong>Pick a day</strong> on the calendar. Highlighted days have rides, and the first available one loads automatically.
     </p>
     <p>
-      <strong>On desktop:</strong> hover over a route or its start pin to highlight it, dim all others to gray, and see the ride details. Click to open the Strava event in a new tab.
+      <strong>Hover or tap a route</strong> to see its details. Click to open the Strava event.
     </p>
     <p>
-      <strong>On mobile:</strong> tap a route or its start pin to highlight it, dim all others to gray, and open a panel at the bottom with the ride details and a "View on Strava" button. Swipe the panel down or tap anywhere on the map to dismiss it and restore all routes.
+      <strong>Solid lines</strong> are paved, <strong>dashed lines</strong> are unpaved (e.g., gravel). Each route has a pin that marks its start.
+    </p>
+    <p>
+      Use the <strong>Metric</strong> button to display the ride statistics in km and meters.
     </p>
 
     <hr>
@@ -415,14 +424,6 @@
     </p>
     <p>
       Questions, bugs, or club suggestions? <a href="https://github.com/RBergua/boulderrides/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a>.
-    </p>
-    <p>
-      This project is free and runs on a personal server 24/7. If it has made your life easier or helped you get out on a ride, you can support it with a small $3 contribution (aka "Buy Me a Coffee"). Every bit helps keep it alive!
-    </p>
-    <p>
-      <a href="https://buymeacoffee.com/rbergua" target="_blank" rel="noopener noreferrer">
-        <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee">
-      </a>
     </p>
 
     <hr style="border-top: 2px solid #eee;">
@@ -617,8 +618,8 @@
     if (ride.distance != null || ride.elevation_gain != null) {
       const sb = document.createElement("span");
       sb.className = "sheet-badge";
-      const distPart = ride.distance != null ? `Distance ${formatDistance(ride.distance)}` : ''; // Magnitude and units
-      const elevPart = ride.elevation_gain != null ? `Elev Gain ${formatElevation(ride.elevation_gain)}` : ''; // Magnitude and units
+      const distPart = ride.distance != null ? `Distance: ${formatDistance(ride.distance)}` : ''; // Magnitude and units
+      const elevPart = ride.elevation_gain != null ? `Elev Gain: ${formatElevation(ride.elevation_gain)}` : ''; // Magnitude and units
       sb.textContent  = [distPart, elevPart].filter(Boolean).join(' | ');
       sheetMeta.appendChild(sb);
     }
