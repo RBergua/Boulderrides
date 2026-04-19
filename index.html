@@ -260,8 +260,10 @@
     #sheet-club { font-size: 1.15em; font-weight: 700; text-transform: uppercase; color: #111; line-height: 1.3; margin: 0; }
     #sheet-title { font-size: 1.0em; font-weight: 400; color: #888; margin: 0 0 12px; }
     #sheet-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-    .sheet-badge { background: #f0f6ff; color: #007bff; border: 1px solid #cce0ff; border-radius: 20px; padding: 4px 12px; font-size: 0.92em; font-weight: 600; }
+    .sheet-badge { background: #f0f6ff; color: #007bff; border: 1px solid #cce0ff; border-radius: 20px; padding: 5px 14px; font-size: 0.88em; font-weight: 500; display: inline-block; line-height: 1; }
     .sheet-badge.women { background: #f3f0ff; color: #6f42c1; border-color: #d0c4f7; }
+    .sheet-badge.nonboulder { background: #f0fff4; color: #28a745; border-color: #b2dfdb; }
+    a:has(.sheet-badge) { text-decoration: none; } /* remove underline from badges */
     #sheet-strava-btn {
       display: block; width: 100%; background: #fc4c02; color: white; border: none;
       border-radius: 12px; padding: 14px; font-size: 1em; font-weight: 700;
@@ -350,36 +352,39 @@
       The following clubs are currently included. To suggest a new one, <a href="https://github.com/RBergua/boulderrides/issues" target="_blank">open a GitHub issue</a>.
     </p>
 
+    <!-- Club badge list — add/remove entries here to update the list -->
+    <!-- Blue = Boulder County-based club (35-mile radius); Green = non-Boulder club (15-mile radius) -->
     <div style="display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 16px;">
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Rapha Boulder</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Fast &amp; Flat</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Gateway</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Pas Normal Studios</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">MAAP</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">GRVL DNKYS | FAST GRVL </span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Wednesday Morning Velo</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Thank Gravel It's Friday</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Ride or Die Collective</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Lo-La Gravel</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Hot Laps</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Wednesday Flag</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Thursday Gravel</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Mike's Bikes Boulder</span>      
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Cassiopeia</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">The Tuesday Night Ride</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Peak to Peak Endurance</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">The Donut Ride</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Boulder Friday Coffee Ride</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Longmont Velo</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Boulder Triathlon Club</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">CyclErie</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Evergreen Ride Club</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">303 VELO</span>
-      <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:5px 14px; font-size:0.88em; font-weight:500;">Sports Garage Cycling</span>
+      <a href="https://www.strava.com/clubs/575042" target="_blank"><span class="sheet-badge">Rapha Boulder</span></a>
+      <a href="https://www.strava.com/clubs/1881055" target="_blank"><span class="sheet-badge">Fast &amp; Flat</span></a>
+      <a href="https://www.strava.com/clubs/1198784" target="_blank"><span class="sheet-badge">Gateway</span></a>
+      <a href="https://www.strava.com/clubs/205018" target="_blank"><span class="sheet-badge">Pas Normal Studios</span></a>
+      <a href="https://www.strava.com/clubs/293623" target="_blank"><span class="sheet-badge">MAAP</span></a>
+      <a href="https://www.strava.com/clubs/1912110" target="_blank"><span class="sheet-badge">GRVL DNKYS | FAST GRVL</span></a>
+      <a href="https://www.strava.com/clubs/135601" target="_blank"><span class="sheet-badge">Wednesday Morning Velo</span></a>
+      <a href="https://www.strava.com/clubs/580179" target="_blank"><span class="sheet-badge">Thank Gravel It's Friday</span></a>
+      <a href="https://www.strava.com/clubs/761000" target="_blank"><span class="sheet-badge">Ride or Die Collective</span></a>
+      <a href="https://www.strava.com/clubs/1123418" target="_blank"><span class="sheet-badge">Lo-La Gravel</span></a>
+      <a href="https://www.strava.com/clubs/1787069" target="_blank"><span class="sheet-badge">Hot Laps</span></a>
+      <a href="https://www.strava.com/clubs/1929619" target="_blank"><span class="sheet-badge">Wednesday Flag</span></a>
+      <a href="https://www.strava.com/clubs/2028457" target="_blank"><span class="sheet-badge">Thursday Gravel</span></a>
+      <a href="https://www.strava.com/clubs/225400" target="_blank"><span class="sheet-badge">Mike's Bikes Boulder</span></a>
+      <a href="https://www.strava.com/clubs/1101032" target="_blank"><span class="sheet-badge">Cassiopeia</span></a>
+      <a href="https://www.strava.com/clubs/1273387" target="_blank"><span class="sheet-badge">The Tuesday Night Ride</span></a>
+      <a href="https://www.strava.com/clubs/1127013" target="_blank"><span class="sheet-badge nonboulder">Peak to Peak Endurance</span></a>
+      <a href="https://www.strava.com/clubs/1975308" target="_blank"><span class="sheet-badge">The Donut Ride</span></a>
+      <a href="https://www.strava.com/clubs/2017429" target="_blank"><span class="sheet-badge">Boulder Friday Coffee Ride</span></a>
+      <a href="https://www.strava.com/clubs/2015751" target="_blank"><span class="sheet-badge">Longmont Velo</span></a>
+      <a href="https://www.strava.com/clubs/29451" target="_blank"><span class="sheet-badge">Boulder Triathlon Club</span></a>
+      <a href="https://www.strava.com/clubs/1096821" target="_blank"><span class="sheet-badge">CyclErie</span></a>
+      <a href="https://www.strava.com/clubs/815" target="_blank"><span class="sheet-badge nonboulder">Evergreen Ride Club</span></a>
+      <a href="https://www.strava.com/clubs/1333942" target="_blank"><span class="sheet-badge">303 VELO</span></a>
+      <a href="https://www.strava.com/clubs/1838369" target="_blank"><span class="sheet-badge">Sports Garage Cycling</span></a>
+      <a href="https://www.strava.com/clubs/1803710" target="_blank"><span class="sheet-badge">Simple Cycling Maps</span></a>
     </div>
 
     <p style="font-size:0.8em; color:#666;">
-      Some clubs may organize rides at different locations. Only rides starting within ~15 miles of downtown Boulder are shown. Rides without a Strava route are excluded.
+      All <span style="color:#007bff; font-weight:600;">blue-labeled</span> clubs are based in Boulder County, while <span style="color:#28a745; font-weight:600;">green-labeled</span> clubs are not. Rides starting within 15 miles of downtown Boulder are shown for green clubs, and within 35 miles for blue clubs. This allows for the inclusion of special rides such as Mt. Blue Sky, Rollins Pass, Estes Park, etc. organized by Boulder clubs. Any rides without a Strava route are excluded.
     </p>
 
     <hr>
