@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Dev notes: python -m http.server 8000 → http://localhost:8000
-       Mobile emulation: F12 → toggle device toolbar
-       Hard refresh: Ctrl+Shift+R (Win/Linux) · Cmd+Shift+R (Mac) -->
+  <!--
+    DEV NOTES
+    ─────────
+    Local server : python -m http.server 8000  →  http://localhost:8000
+    Mobile test  : F12 → toggle device toolbar
+    Hard refresh : Ctrl+Shift+R (Win/Linux) | Cmd+Shift+R (Mac)
+  -->
 
   <!-- Character encoding -->
   <meta charset="utf-8">
@@ -15,7 +19,7 @@
   <!-- Viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Progressive Web App to feel like an app-->
+  <!-- Progressive Web App: : makes the site installable and feel like a native app -->
   <link rel="manifest" href="/manifest.json">
   <meta name="mobile-web-app-capable" content="yes"> <!-- Android -->
   <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iOS -->
@@ -30,7 +34,15 @@
   <!-- iOS home screen icon -->
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 
-  <!-- iOS: Splash screens pre-generated for all iPhone device sizes, portraid and landscape. Images generated with: https://progressier.com/pwa-icons-and-ios-splash-screen-generator -->
+  <!--
+    iOS SPLASH SCREENS
+    ──────────────────
+    Pre-generated for all iPhone/iPad sizes (portrait + landscape).
+    Generated with: https://progressier.com/pwa-icons-and-ios-splash-screen-generator
+    These cannot be reduced — iOS requires one <link> per device/orientation combination.
+  -->
+
+  <!-- iPhones — landscape -->
   <link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/assets/splash_screens/iPhone_17_Pro_Max__iPhone_16_Pro_Max_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/assets/splash_screens/iPhone_17_Pro__iPhone_17__iPhone_16_Pro_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/assets/splash_screens/iPhone_16_Plus__iPhone_15_Pro_Max__iPhone_15_Plus__iPhone_14_Pro_Max_landscape.png">
@@ -44,6 +56,8 @@
   <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="/assets/splash_screens/iPhone_8_Plus__iPhone_7_Plus__iPhone_6s_Plus__iPhone_6_Plus_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/iPhone_8__iPhone_7__iPhone_6s__iPhone_6__4.7__iPhone_SE_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/4__iPhone_SE__iPod_touch_5th_generation_and_later_landscape.png">
+ 
+  <!-- iPads — landscape -->
   <link rel="apple-touch-startup-image" media="screen and (device-width: 1032px) and (device-height: 1376px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/13__iPad_Pro_M4_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/12.9__iPad_Pro_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1210px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/11__iPad_Pro_M4_landscape.png">
@@ -53,6 +67,8 @@
   <link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/10.2__iPad_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/9.7__iPad_Pro__7.9__iPad_mini__9.7__iPad_Air__9.7__iPad_landscape.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/assets/splash_screens/8.3__iPad_Mini_landscape.png">
+ 
+  <!-- iPhones — portrait -->
   <link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/assets/splash_screens/iPhone_17_Pro_Max__iPhone_16_Pro_Max_portrait.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/assets/splash_screens/iPhone_17_Pro__iPhone_17__iPhone_16_Pro_portrait.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/assets/splash_screens/iPhone_16_Plus__iPhone_15_Pro_Max__iPhone_15_Plus__iPhone_14_Pro_Max_portrait.png">
@@ -66,6 +82,8 @@
   <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/assets/splash_screens/iPhone_8_Plus__iPhone_7_Plus__iPhone_6s_Plus__iPhone_6_Plus_portrait.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/assets/splash_screens/iPhone_8__iPhone_7__iPhone_6s__iPhone_6__4.7__iPhone_SE_portrait.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/assets/splash_screens/4__iPhone_SE__iPod_touch_5th_generation_and_later_portrait.png">
+ 
+  <!-- iPads — portrait -->
   <link rel="apple-touch-startup-image" media="screen and (device-width: 1032px) and (device-height: 1376px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/assets/splash_screens/13__iPad_Pro_M4_portrait.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/assets/splash_screens/12.9__iPad_Pro_portrait.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1210px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/assets/splash_screens/11__iPad_Pro_M4_portrait.png">
@@ -76,22 +94,18 @@
   <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/assets/splash_screens/9.7__iPad_Pro__7.9__iPad_mini__9.7__iPad_Air__9.7__iPad_portrait.png">
   <link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/assets/splash_screens/8.3__iPad_Mini_portrait.png">
 
-  <!-- Open Graph: controls how the site looks when shared on Facebook, LinkedIn, Slack, etc. -->
+  <!-- Open Graph: controls how the site looks when shared on social media: Facebook, LinkedIn, Slack, etc. -->
   <meta property="og:title"       content="Boulder Group Rides">
   <meta property="og:description" content="Every group ride in Boulder County, all in one place.">
   <meta property="og:image"       content="https://boulderrides.cc/assets/og-image.png">
   <meta property="og:url"         content="https://boulderrides.cc">
   <meta property="og:type"        content="website">
 
-  <!-- Leaflet CSS -->
-  <!-- If a future version breaks the map, use this link instead: https://unpkg.com/leaflet@1.9.4/dist/leaflet.css --> 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"
-  />
+  <!-- MapLibre GL JS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
 
   <style>
-    /* Fit on the screen, with no scrollbars */
+    /* Base layout: full-screen, no scrollbars */
     html, body {
       margin: 0;
       height: 100%;
@@ -99,6 +113,8 @@
       font-family: Arial;
       overflow: hidden; /* prevents scrollbars */
     }
+
+    /* Calendar */
     #calendar { 
       display: flex; 
       gap: 10px;
@@ -117,74 +133,43 @@
       padding: 5px;
       border-radius: 5px;
     }
-    .ride-day {
-      background-color: #e6e6e6; /* gray background for days with rides */
-    }
-    .ride-tooltip {
-      border-radius: 12px; /* rounded corners */
-      padding: 16px 20px;
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
-      border: none;
-      background: white;
-      min-width: 200px;
-    }
     .day-name { font-weight: bold; }
     .day-date { font-size: 0.85em; color: gray; }
-    .ride-day .day-date { color: #555; } /* darker gray for date text on ride days */
-    .selected { background-color: #007bff; color: white; } /* background color blue when selected */
-    .selected .day-date { color: white; } /* letters turn white when selected */
-    .leaflet-interactive:focus { outline: none; } /* removes focus rectangle from route on map on click */
-    #map {
-      height: calc(100% - 64px); /* 100% minus calendar height */
-    }
 
-    #info-btn {
+    /* Days that have rides get a gray background */
+    .ride-day { background-color: #e6e6e6; } /* gray background for days with rides */
+    .ride-day .day-date { color: #555; } /* darker gray for date text on ride days */
+
+    /* Selected day turns blue */
+    .selected { background-color: #007bff; color: white; }
+    .selected .day-date { color: white; }
+
+    /* Map fills the remaining screen height */
+    #map { height: calc(100% - 64px); } /* 100% minus calendar height */
+
+    /* Shared button base: reused by info-btn and metric-btn */
+    .overlay-btn {
       position: fixed;
-      bottom: 64px;
       left: 16px;
       z-index: 1000;
-      background: #007bff;
       color: white;
       border: none;
       border-radius: 20px;
       padding: 8px 16px;
-      min-width: 72px;  /* Forces "More" to match "Metric" width */
+      min-width: 72px;
       font-size: 0.9em;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       transition: background 0.2s;
     }
-    #info-btn:hover { background: #0056b3; }
+    #info-btn   { bottom: 49px; background: #007bff; }
+    #metric-btn { bottom: 9px;  background: #777; } /* gray background when not selected */
+    #info-btn:hover   { background: #0056b3; }
+    #metric-btn.active { background: #007bff; }
+    #metric-btn:active { transform: scale(0.98); }
 
-    #metric-btn {
-      position: fixed;
-      bottom: 24px;
-      left: 16px;
-      z-index: 1000;
-      background: #777; /* gray background when not selected */
-      color: #fff;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 16px;
-      min-width: 72px;  /* Matches "More" button width */
-      font-size: 0.9em;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    #metric-btn.active {
-      background: #007bff; /* blue background when selected */
-      color: #fff;
-    }
-
-    #metric-btn:active {
-      transform: scale(0.98);
-    }
-
-    /* ── Full-screen info page ── */
+    /* Full-screen "More" page */
     #info-page {
       display: none;
       position: fixed;
@@ -201,7 +186,7 @@
       padding: 60px 24px 48px;
     }
 
-    /* Close button — fixed top-right always visible */
+    /* Close button: always visibe in the top-right corner */
     #info-close {
       position: fixed;
       top: 14px;
@@ -221,31 +206,16 @@
     #info-close:hover { background: #0056b3; }
 
     /* Info page typography */
-    #info-content h1 {
-      font-size: 1.6em;
-      color: #007bff;
-      margin: 0 0 8px;
-    }
-    #info-content h2 {
-      font-size: 1.15em;
-      color: #222;
-      margin: 28px 0 8px;
-    }
-    #info-content p {
-      margin: 0 0 12px;
-      line-height: 1.7;
-      color: #333;
-      font-size: 0.95em;
-    }
-    #info-content hr {
-      border: none;
-      border-top: 1px solid #eee;
-      margin: 24px 0;
-    }
+    #info-content h1 { font-size: 1.6em; color: #007bff; margin: 0 0 8px; }
+    #info-content h2 { font-size: 1.15em; color: #222; margin: 28px 0 8px; }
+    #info-content p { margin: 0 0 12px; line-height: 1.7; color: #333; font-size: 0.95em; }
+    #info-content hr {border: none; border-top: 1px solid #eee; margin: 24px 0; }
 
-    /* ── Mobile bottom sheet ── */
+    /* Mobile bottom sheet */
     #ride-sheet {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
+      position: fixed; 
+      bottom: 0; left: 0; right: 0; 
+      z-index: 900;
       background: white; border-radius: 18px 18px 0 0;
       box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
       transform: translateY(100%);
@@ -260,10 +230,14 @@
     #sheet-club { font-size: 1.15em; font-weight: 700; text-transform: uppercase; color: #111; line-height: 1.3; margin: 0; }
     #sheet-title { font-size: 1.0em; font-weight: 400; color: #888; margin: 0 0 12px; }
     #sheet-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+
+    /* Bubbles used in the bottom sheet, desktop tooltip, and clubs in the More section */
     .sheet-badge { background: #f0f6ff; color: #007bff; border: 1px solid #cce0ff; border-radius: 20px; padding: 5px 14px; font-size: 0.88em; font-weight: 500; display: inline-block; line-height: 1; }
     .sheet-badge.women { background: #f3f0ff; color: #6f42c1; border-color: #d0c4f7; }
-    .sheet-badge.nonboulder { background: #f0fff4; color: #28a745; border-color: #b2dfdb; }
+	  .sheet-badge.nonboulder { background: #f0fff4; color: #28a745; border-color: #b2dfdb; }
     a:has(.sheet-badge) { text-decoration: none; } /* remove underline from badges */
+
+    /* "View on Strava" button */
     #sheet-strava-btn {
       display: block; width: 100%; background: #fc4c02; color: white; border: none;
       border-radius: 12px; padding: 14px; font-size: 1em; font-weight: 700;
@@ -275,32 +249,67 @@
     #sheet-strava-btn:active { background: #e04400; transform: scale(0.98); }
     #sheet-strava-btn.no-url { background: #ccc; cursor: default; }
 
-    /* Info button, metric button, and map attribution hide behind sheet when open */
+    /* On touch devices: hide info button, metric button, and map attribution behind sheet when open */
     @media (pointer: coarse) {
       #info-btn { transition: background 0.2s, bottom 0.3s ease; }
-      #info-btn.sheet-open { opacity: 0; pointer-events: none; }
       #metric-btn { transition: background 0.2s, bottom 0.3s ease; }
-      #metric-btn.sheet-open { opacity: 0; pointer-events: none; }
-      .leaflet-control-attribution { transition: opacity 0.3s ease; font-size: 11px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 20px); }
-      .leaflet-control-attribution.hidden { opacity: 0; pointer-events: none; }
+      #info-btn.sheet-open { opacity: 0; pointer-events: none; }
+      #metric-btn.sheet-open { opacity: 0; pointer-events: none; }      
+      .maplibregl-ctrl-attrib { transition: opacity 0.3s ease; } /* compact mode */
+      .maplibregl-ctrl-attrib.hidden { opacity: 0; pointer-events: none; }
     }
-    /* Hide sheet entirely on desktop */
+
+    /* Hide bottom-sheet entirely on desktop */
     @media (pointer: fine) { #ride-sheet { display: none !important; } }
+
+    /* Remove MapLibre GL JS focus outline on routes */
+    .maplibregl-canvas:focus { outline: none; }
+
+    /* MapLibre popup: transparent wrapper so only our inner HTML is visible (no rectangle) */
+    .maplibregl-popup-content {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+
+    /* Desktop hover tooltip card */
+    .ride-tooltip {
+      border-radius: 12px; /* rounded corners */
+      padding: 16px 20px;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+      border: none;
+      background: white;
+      min-width: 200px;
+    }
+
+    /* Make attribution smaller and less intrusive */
+    .maplibregl-ctrl-attrib {
+      font-size: 9px;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;   /* vertical centering */
+      line-height: normal;   
+    }
 
   </style>
 </head>
 <body>
 
+<!-- Day-picker calendar strip -->
 <div id="calendar"></div>
+ 
+<!-- Full-screen map -->
 <div id="map"></div>
+ 
+<!-- "More" info button (bottom-left, above Metric) -->
+<button id="info-btn" class="overlay-btn"
+        onclick="document.getElementById('info-page').classList.add('open')">More</button>
+ 
+<!-- Metric/Imperial toggle (default: imperial) -->
+<button id="metric-btn" class="overlay-btn">Metric</button>
 
-<!-- More button (previously named "Info") -->
-<button id="info-btn" onclick="document.getElementById('info-page').classList.add('open')">More</button>
-
-<!-- Metric button (default units are imperial) -->
-<button id="metric-btn">Metric</button>
-
-<!-- Mobile bottom sheet -->
+<!-- Mobile bottom sheet: slides up on route tap -->
 <div id="ride-sheet">
   <div id="sheet-handle"></div>
   <div id="sheet-body">
@@ -314,7 +323,7 @@
   </div>
 </div>
 
-<!-- Full-screen info page -->
+<!-- Full-screen "More" info page -->
 <div id="info-page">
   <button id="info-close" onclick="document.getElementById('info-page').classList.remove('open')">✕ Close</button>
 
@@ -440,126 +449,125 @@
   </div>
 </div>
 
-<!-- Leaflet JS -->
-<!-- If a future version breaks the map, use this link instead: https://unpkg.com/leaflet@1.9.4/dist/leaflet.js --> 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- MapLibre GL JS -->
+<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 
 <script>
+// -------------------------------
+// Immediately Invoked Function Expression (IIFE) to avoid polluting global scope. All code runs inside this function.
+// -------------------------------
+(() => {
+
   // -------------------------------
-  // Detect touch device (mobile)
+  // Device detection: detect touch device.
   // -------------------------------
+  // true on phones/tablets (touch), false on desktop (mouse).
+
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
   console.log("isTouchDevice:", isTouchDevice); // Check if we detect computer vs mobile devices properly (CTRL+SHIFT+I in browser to open console)
 
   // -------------------------------
-  // Convert "HH:MM" (24-hour format) to "H:MM AM/PM" (12-hour format). More common in the US.
-  // -------------------------------
+  // Unit formatting helpers 
+  //--------------------------------
+  // Converts "HH:MM" (24-hour format) to "H:MM AM/PM" (12-hour format). More common in the US.
   function formatTime12h(timeStr) {
-    const [hourStr, minuteStr] = timeStr.split(":"); // Spliting into hourStr and minuteSt
-    let hour = parseInt(hourStr, 10); // Convert to integer (to do some math below)
-    const minute = minuteStr;
+    let [hour, minute] = timeStr.split(":").map((v, i) => i === 0 ? parseInt(v, 10) : v); // Spliting into hour and minute. For the hour, convert to integer (to do some math below)
     const ampm = hour >= 12 ? "PM" : "AM"; // hours 12–23 are PM, hours 0–11 are AM
     hour = hour % 12 || 12; // convert to 12-hour fomat. hour÷12 remainder: 13→1, 14→2 … but 0 and 12 both give remainder 0, so || 12 replaces that with 12.
     return `${hour}:${minute} ${ampm}`;
   }
 
+  // Formats a distance (stored in miles) as either mi or km (based on Metric flag).
+  function formatDistance(miles) {
+    return metricUnits
+      ? (miles * 1.609344).toFixed(1) + ' km' // From miles to km
+      : miles.toFixed(1) + ' mi'; // The JSON file has already the units in miles
+  }
+
+   // Formats an elevation gain (stored in feet) as either ft or m (based on Metric flag).
+  function formatElevation(feet) {
+    return metricUnits 
+      ? Math.round(feet * 0.3048).toLocaleString() + ' m' // From feet to meters 
+      : feet.toLocaleString() + ' ft'; // The JSON file has already the units in feet
+  }
+
   // -------------------------------
-  // Cool start markers with colored pin and white center
+  // Pin marker (start point)
   // -------------------------------
-  function createPinMarker(latlng, color) {
-    const html = `
+  // createPinMarker(lnglat, color)
+  // lnglat: [lng, lat] in MapLibre order.
+  // Returns a maplibregl.Marker already positioned.
+  function createPinMarker(lnglat, color) {
+    const el = document.createElement('div');
+    el.innerHTML = `
       <svg width="24" height="32" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 0 C5.4 0 0 5.4 0 12 C0 21 12 32 12 32 C12 32 24 21 24 12 C24 5.4 18.6 0 12 0 Z"
             fill="${color}" stroke="white" stroke-width="1.5"/>
         <circle cx="12" cy="12" r="5" fill="white"/>
       </svg>`;
-    return L.marker(latlng, {
-      icon: L.divIcon({ html, className: '', iconSize: [24, 32], iconAnchor: [12, 32] }) // iconSize: pin dimensions in pixels. // iconAnchor: [12, 32] (horizontal center, full height) ensures the tip of the pin points exactly to the starting location.
-    });
+    el.style.cssText = 'cursor:pointer; width:24px; height:32px;';
+    return new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lnglat);
   }
 
   // -------------------------------
-  // Initialize Leaflet map
+  // Map initialization
+  // MapLibre GL JS map (vector tiles)
+  // MapLibre note: coordinates are always [lng, lat] (longitude first), unlike Leaflet's [lat, lng].
   // -------------------------------
-  const defaultCenter = [40.01499, -105.27055]; // Boulder, CO. [Lat, Long]
-  const defaultZoom = 14; // Zoom level 14
-  const map = L.map('map', { zoomSnap: 0, tapTolerance: 100, tap: false }).setView(defaultCenter, defaultZoom); // zoomSnap: 0 allows for smoother zooming without forcing integer zoom levels. tap: false it does not wait to distinguish between a tap and a long press.
+  // Boulder, CO. Stored as [lat, lng] for readability; converted lster on to [lng, lat] for MapLibre.
+  const DEFAULT_CENTER = [40.01499, -105.27055];
+  const DEFAULT_ZOOM = 12;
 
-  // Close sheet (mobile) or tooltips (desktop) when tapping the map background
-  map.on('click', function () {
-    if (isTouchDevice) {
-      closeSheet();
-    } else {
-      map.eachLayer(l => { if (l.closeTooltip) l.closeTooltip(); });
-    }
+  // API key is locked to boulderrides.cc domain. Safe to expose in the frontend.
+  const MAPTILER_API_KEY = 'dD2px0qif6MjSZvVnAOB';
+  const maptilerStyleUrl = `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${MAPTILER_API_KEY}`; // Primary map: MapTiler Outdoors. Requires API key. We have 5,000 sessions and 100,000 requests/month for free (https://www.maptiler.com/pricing/)
+  const fallbackStyleUrl = 'https://tiles.stadiamaps.com/styles/outdoors.json'; // Fallback: Stadia outdoors. Free, no key required.
+
+  // Start with the fallback style so the map is immediately visible and interactive.
+  // Then probe MapTiler with a HEAD request (no data downloaded) and silently swap
+  // to the richer vector style if the key is valid and quota is available.  
+  const map = new maplibregl.Map({
+    container: 'map',
+    style:     fallbackStyleUrl,
+    center:    [DEFAULT_CENTER[1], DEFAULT_CENTER[0]], // MapLibre: [lng, lat]
+    zoom:      DEFAULT_ZOOM,
+    maxZoom:   16,
   });
 
-  // Try MapTiler first, fall back to OpenStreetMaps (OSM) if tiles fail
-  // MapTiler: We have 5,000 sessions and 100,000 requests/month for free (https://www.maptiler.com/pricing/)
-  // The tile requests per user around ~25 tiles.
-  // MapTiler is heavier than OSM, but has terrain shading, trail detail, and topographic richness.
-  // Tiles should be cached in the user's browser after the first load. But they only last 8 hours per user (MapTiler's Cache-Control).
-  // We use a strategy (Service Worker [sw.js]) to extend the tiles in cache from 8 hours to 90 days and save MapTiler API requests.
-  const ENABLE_CACHE_MAPTILER = true; // Set to false to disable caching
-  const MAPTILER_API_KEY = 'g8OdcHBJTdeo8Xdt8nLE'; // This API key is locked to requests that come from the boulderrides.cc domain. Use a general key for local testing in localhost. Provide a bad key to fall back to OSM as well.
-  const maptilerAttribution = '&copy; <a href="https://www.maptiler.com/">MapTiler</a> &copy; <a href="https://www.openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-  const osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-  const osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'; // Fallback to legacy map
-  // MapTiler serves 512px tiles by default (confirmed via DevTools → Preview tab).
-  const maptilerTileUrl = `https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`;
-
-  // Create both layers (but don’t add yet)
-  const maptilerLayer = L.tileLayer(maptilerTileUrl, {
-    attribution: maptilerAttribution,
-    maxZoom: 19
-  });
-
-  const osmLayer = L.tileLayer(osmUrl, {
-    attribution: osmAttribution,
-    maxZoom: 19
-  });
-
-  // Fallback if MapTiler fails (quota exceeded, bad key, etc.)
-  // If it fails, silently swap the tile layer to OSM without affecting the rest of the map
-  fetch(`https://api.maptiler.com/maps/outdoor/0/0/0.png?key=${MAPTILER_API_KEY}`, { // This adds one extra tile request (zoom level 0 tile) on every page load to test the Maptiles access
-    method: 'HEAD' // faster, no image download
-  })
+  fetch(maptilerStyleUrl, { method: 'HEAD' })
     .then(res => {
       if (!res.ok) throw new Error();
-
       console.log('MapTiler: OK');
-      maptilerLayer.addTo(map);
+      map.setStyle(maptilerStyleUrl);
     })
-    .catch(() => {
-      console.warn('MapTiler unavailable, falling back to OpenStreetMap');
-      osmLayer.addTo(map);
-    });
+    .catch(() => console.warn('MapTiler unavailable, keeping OpenFreeMap fallback'));
 
-  // Service Worker (SW): extends MapTiler tile cache from 8 hours to 90 days.
-  // The browser installs sw.js silently on first visit and serves cached tiles on every return visit, saving API requests. See sw.js for full details.
-  // In the first visit, the user should experience identical speed. The SW installs silently in the background while the page loads normally.
-  // For successive visits, it should feel faster. Tiles are served from the device's own disk instead of internet (MapTiler's servers and back).
-  // The disk space taken for a normal session is around 1–4 MB per user. 
-  // Setting ENABLE_CACHE_MAPTILER to false will actively unregister the SW from the user's browser on their next visit, cleanly disabling caching.
-  if ('serviceWorker' in navigator) {
-    if (ENABLE_CACHE_MAPTILER) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('Service Worker registered: tiles cached for 90 days'))
-        .catch(err => console.warn('Service Worker registration failed:', err));
-    } else {
-      navigator.serviceWorker.getRegistrations()
-        .then(regs => regs.forEach(reg => reg.unregister()))
-        .then(() => console.log('Service Worker unregistered: caching disabled'));
-    }
-  }
+  // Zoom in/out buttons (compass hidden)
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
+
+  // Tracks the currently visible desktop hover popup
+  let activePopup = null;
+
+  // Clicking the map background closes the mobile sheet or desktop popup
+  map.on('click', () => {
+    if (isTouchDevice) closeSheet();
+    else if (activePopup) { activePopup.remove(); activePopup = null; }
+  });
 
   // -------------------------------
   // Load routes from club_rides.json
-  // ------------------------------- 
+  // -------------------------------
+  // Rides grouped by date: { "YYYY-MM-DD": [ride, ride, ...], ... }
   let ridesByDate = {};
 
-  fetch('club_rides.json?v=' + Date.now()) // ?v=Date.now() prevents cached version from being used
-    .then(response => response.json())
+  // Cache bust: changes once per hour.
+  // This lets the browser cache the file for up to 1 hour (fast repeat visits)
+  // while ensuring data is never more than 1 hour old.
+  const cacheBust = Math.floor(Date.now() / (1000 * 60 * 60));
+
+  // Fetch ride data immediately, in parallel with the map style loading.
+  const ridesReady = fetch('club_rides.json')
+    .then(r => r.json())
     .then(rides => {
       // Group rides by date (YYYY-MM-DD)
       rides.forEach(ride => {
@@ -567,9 +575,14 @@
         if (!ridesByDate[date]) ridesByDate[date] = [];
         ridesByDate[date].push(ride);
       });
-
-      generateCalendar();
     });
+
+  // MapLibre requires addSource/addLayer after the style is ready.
+  // Wait for BOTH the map style AND ride data before rendering — whichever
+  // finishes last triggers generateCalendar().
+  map.on('load', () => {
+    ridesReady.then(() => generateCalendar());
+  });
 
   // -------------------------------
   // Mobile bottom sheet
@@ -581,21 +594,21 @@
   const sheetMeta  = document.getElementById("sheet-meta");
   const sheetBtn   = document.getElementById("sheet-strava-btn");
   const infoBtnEl  = document.getElementById("info-btn");
-  const metricBtn = document.getElementById('metric-btn');
-  let metricUnits = false; // Default to imperial units
-
-  metricBtn.addEventListener('click', () => { // Toggle Metric units on/off
-    metricUnits = !metricUnits;
-    if (metricUnits) metricBtn.classList.add('active');
-    else metricBtn.classList.remove('active');
+  const metricBtn  = document.getElementById('metric-btn');
   
-  // Refresh current day's rides with new units
-  const selectedDay = document.querySelector('.selected');
-  if (selectedDay && selectedDay.dataset.date) {
-    loadRoutes(selectedDay.dataset.date);
-  }
-  });
+  let metricUnits  = false; // default to imperial; toggled by the Metric button
+  let currentHL   = null;   // segmentLines array for the currently highlighted route (mobile)
+  // Assigned inside loadRoutes; called by closeSheet to undo highlighting on dismiss
+  let restoreAllRoutes = null;
 
+  // Toggle Metric button and re-render current day's routes with new units
+  metricBtn.addEventListener('click', () => {
+    metricUnits = !metricUnits;
+    metricBtn.classList.toggle('active', metricUnits);
+    const selected = document.querySelector('.day-column.selected');
+    if (selected?.dataset.date) loadRoutes(selected.dataset.date);
+  });  
+  
   // Swipe down to close
   let touchStartY = 0;
   sheet.addEventListener("touchstart", (e) => {
@@ -606,91 +619,84 @@
     if (swipeDistance > 60) closeSheet(); // 60px downward swipe closes the sheet. Tune the 60 to make it more or less sensitive
   }, { passive: true });
 
-  function openSheet(ride) {
-    const rideTime = formatTime12h(ride.date.split(" ")[1]);
-    sheetBar.style.background = ride.color || "#007bff";
-    sheetClub.textContent     = ride.club_name;
-    sheetTitle.textContent    = ride.title;
-
+   // Populates and slides up the mobile bottom sheet for a given ride.
+    function openSheet(ride) {
+    sheetBar.style.background  = ride.color || "#007bff";
+    sheetClub.textContent      = ride.club_name;
+    sheetTitle.textContent     = ride.title;
+ 
+    // Build badge chips: time | distance + elevation | women-only
     sheetMeta.innerHTML = "";
-    const tb = document.createElement("span");
-    tb.className = "sheet-badge";
-    tb.textContent = rideTime;
-    sheetMeta.appendChild(tb);
+    const addBadge = (text, extra = '') => {
+      const b = document.createElement("span");
+      b.className = "sheet-badge" + (extra ? " " + extra : "");
+      b.textContent = text;
+      sheetMeta.appendChild(b);
+    };
+ 
+    addBadge(formatTime12h(ride.date.split(" ")[1]));
+ 
     if (ride.distance != null || ride.elevation_gain != null) {
-      const sb = document.createElement("span");
-      sb.className = "sheet-badge";
-      const distPart = ride.distance != null ? `Distance: ${formatDistance(ride.distance)}` : ''; // Magnitude and units
-      const elevPart = ride.elevation_gain != null ? `Elev Gain: ${formatElevation(ride.elevation_gain)}` : ''; // Magnitude and units
-      sb.textContent  = [distPart, elevPart].filter(Boolean).join(' | ');
-      sheetMeta.appendChild(sb);
+      const parts = [
+        ride.distance      != null ? `Distance: ${formatDistance(ride.distance)}`           : '',
+        ride.elevation_gain != null ? `Elev Gain: ${formatElevation(ride.elevation_gain)}` : '',
+      ].filter(Boolean);
+      addBadge(parts.join(' | '));
     }
-    if (ride.women_only) {
-      const wb = document.createElement("span");
-      wb.className = "sheet-badge women";
-      wb.textContent = "Women only";
-      sheetMeta.appendChild(wb);
-    }
-
+ 
+    if (ride.women_only) addBadge("Women only", "women");
+ 
+    // Wire up the Strava button
     if (ride.url) { sheetBtn.href = ride.url; sheetBtn.classList.remove("no-url"); }
     else          { sheetBtn.removeAttribute("href"); sheetBtn.classList.add("no-url"); }
-
+ 
     sheet.classList.add("open");
     requestAnimationFrame(() => {
       document.documentElement.style.setProperty("--sheet-height", sheet.offsetHeight + "px");
       infoBtnEl.classList.add("sheet-open");
       metricBtn.classList.add("sheet-open");
-      document.querySelector('.leaflet-control-attribution').classList.add('hidden');
+      document.querySelector('.maplibregl-ctrl-attrib')?.classList.add('hidden');
     });
   }
 
+  // Slides down and fully resets the mobile bottom sheet.
   function closeSheet() {
     sheet.classList.remove("open");
     infoBtnEl.classList.remove("sheet-open");
     metricBtn.classList.remove("sheet-open");
-    document.querySelector('.leaflet-control-attribution').classList.remove('hidden');
+    document.querySelector('.maplibregl-ctrl-attrib').classList.remove('hidden');
     if (currentHL) {
       restoreAllRoutes(); // restore all routes to default style when sheet is dismissed
       currentHL = null;
     }
   }
 
-  let currentHL = null; // reference to the currently highlighted route's segment lines (mobile only)
-  let restoreAllRoutes = null; // assigned inside loadRoutes, called by closeSheet on sheet dismiss
-
   // -------------------------------
-  // Flag to enable/disable paved vs unpaved surface rendering.
-  // true  → paved = solid line, unpaved = dashed line
-  // false → all routes drawn as a single continuous solid line
+  // Surface (paved/unpaved) rendering
   // -------------------------------
+  // When SHOW_SURFACE is true, routes are drawn with two line styles:
+  //   paved   → solid colored line
+  //   unpaved → dashed colored line over a white base line
+  // Setting this to false draws every route as a single solid line.
   const SHOW_SURFACE = true;
 
-  // -------------------------------
   // Split a route into contiguous segments by surface type.
   // Each segment: { latlngs: [[lat, lng], ...], surface: 'paved'|'unpaved' }
-  // Only used when SHOW_SURFACE is true.
   //
-  // Step 1 — smooth: **isolated single unpaved points flanked by paved on both
-  // sides are promoted to paved**. They can't form a visible dashed line and are
+  // Step 1 — smooth: isolated single unpaved points flanked by paved on both
+  // sides are promoted to paved. They can't form a visible dashed line and are
   // almost certainly misclassifications. Two or more consecutive unpaved points
   // are left alone as a genuine unpaved stretch.
   //
   // Step 2 — split: route is cut into contiguous same-surface segments.
   // Each segment overlaps by one point with the next so polylines connect
-  // seamlessly without gaps. A Leaflet polyline needs at least 2 points to
-  // draw a visible line.
-  // -------------------------------
+  // seamlessly without gaps.
   function splitBySurface(route) {
-    // Step 1: smooth out isolated single unpaved points (one unpaved point flanked by paved on both sides).
-    // These cannot form a visible dashed line and are almost certainly misclassifications.
-    // Two or more consecutive unpaved points are left alone as a genuine unpaved stretch.
+    // Step 1: smooth out lone unpaved points
     const surfaces = route.map(pt => pt[2]);
-    const smoothed = surfaces.slice(); // copy
-    for (let i = 1; i < surfaces.length - 1; i++) {
-      if (surfaces[i] === 'unpaved' && surfaces[i-1] === 'paved' && surfaces[i+1] === 'paved') {
-        smoothed[i] = 'paved';
-      }
-    }
+    const smoothed = surfaces.map((s, i) =>
+      (s === 'unpaved' && surfaces[i-1] === 'paved' && surfaces[i+1] === 'paved') ? 'paved' : s
+    );
 
     // Step 2: split into contiguous segments, overlapping by 1 point at boundaries
     // so consecutive polylines connect seamlessly with no gaps.
@@ -698,9 +704,8 @@
     let start = 0;
     for (let i = 1; i <= route.length; i++) {
       if (i === route.length || smoothed[i] !== smoothed[start]) {
-        const end = Math.min(i + 1, route.length); // overlap: include first point of next segment
         segments.push({
-          latlngs: route.slice(start, end).map(pt => [pt[0], pt[1]]),
+          latlngs: route.slice(start, Math.min(i + 1, route.length)).map(pt => [pt[0], pt[1]]),
           surface: smoothed[start]
         });
         start = i;
@@ -710,51 +715,39 @@
   }
 
   // -------------------------------
-  // Convert units based on Metric flag
+  // Route rendering
   // -------------------------------
-  function formatDistance(dist) {
-    return metricUnits 
-      ? (dist * 1.609344).toFixed(1) + ' km' // From miles to km
-      : dist.toFixed(1) + ' mi'; // The JSON file has already the units in miles
-  }
-
-  function formatElevation(elev) {
-    return metricUnits 
-      ? Math.round(elev * 0.3048).toLocaleString() + ' m' // From feet to meters 
-      : elev.toLocaleString() + ' ft'; // The JSON file has already the units in feet
-  }
-
-  // -------------------------------
-  // Function to draw routes for a given date
-  // Desktop: hover to show tooltip, click to open URL
-  // Mobile: tap route to show bottom sheet slides up with details
-  // -------------------------------
+  // Draws routes for the selected calendar date.
+  //  Desktop: hover highlights the route + shows a tooltip, click opens Strava.
+  //  Mobile:  tap highlights the route + slides up the bottom sheet.
   function loadRoutes(date) {
-
     if (isTouchDevice) closeSheet(); // If we're on mobile: close sheet (if it was open) when moving between days
 
     // Debug logs to check the selected date and available rides (F12 or CTRL+SHIFT+I in browser to open console)
     console.log("Selected date:", date);
     console.log("Dates with rides:", Object.keys(ridesByDate));
 
-    // Remove old polylines and markers
-    map.eachLayer(layer => {
-      if (layer instanceof L.Polyline || layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
+    // Remove old route layers, sources, and pin markers rom previous render
+    map._routeMarkers?.forEach(m => m.remove());
+    map._routeMarkers = [];
+    map._routeLayerIds?.forEach(id => {
+      if (map.getLayer(id))   map.removeLayer(id);
+      if (map.getSource(id))  map.removeSource(id);
     });
-
+    map._routeLayerIds  = [];
+    map._routeSourceIds = [];
+ 
     const routes = ridesByDate[date] || [];
-    if (routes.length === 0) {
-      // No routes → reset to default view
-      map.setView(defaultCenter, defaultZoom);
+    if (!routes.length) {
+      map.jumpTo({ center: [DEFAULT_CENTER[1], DEFAULT_CENTER[0]], zoom: DEFAULT_ZOOM });
       return;
     }
 
-    // Offset starting markers that share the same starting location on the same day so they don't stack invisibly on top of each other.
+    // Offset overlapping start markers
+    // When two or more rides share the same starting point, spread their pins
+    // in a small circle (~50–70 m radius) so they are all individually tappable.
     // This is useful if there are two or more rides with the same starting point.
     const startKey = r => `${r.starting_location[0].toFixed(5)},${r.starting_location[1].toFixed(5)}`;
-
     const startGroups = {};
     routes.forEach(ride => {
       const key = startKey(ride);
@@ -764,295 +757,442 @@
 
     Object.values(startGroups).forEach(group => {
       if (group.length <= 1) return;
-      
       // Offset around ~50-70 m for starting markers that share the same starting location on the same day
       const radiusLat = 0.0005;
       const radiusLng = 0.0007;
-
       // Circular offset approach:
       group.forEach((ride, i) => {
         const angle = (2 * Math.PI * i) / group.length;
-
-      const original = ride.starting_location;
-
-      ride._offset_start = [
-        original[0] + Math.cos(angle) * radiusLat,
-        original[1] + Math.sin(angle) * radiusLng
-      ];
+        ride._offset_start = [
+          ride.starting_location[0] + Math.cos(angle) * R_LAT,
+          ride.starting_location[1] + Math.sin(angle) * R_LNG,
+        ];
       });
     });
 
-    // Palette of colors for regular rides (will cycle if more routes in a day than colors)
+    // Color palettes 
     const colors = ['blue', 'red', 'green', 'black', 'brown', '#ff7f0e'];
-    // Nicer colors to consider in the future:
-    //const colors = ['#1E88E5','#E53935','#43A047','#FB8C00','#8E24AA','#6D4C41','#D81B60'];
     // Purple shades for women-only rides (cycles if more than 3):
     const womenColors = ['#6F42C1 ', '#AB47BC', '#8A63D2'];
     let womenIdx = 0;
     let regularIdx = 0;
 
-    // Collect all polylines
-    const fg = L.featureGroup().addTo(map);
+    // Layer ID utilities
+    // Each polyline segment gets its own GeoJSON source + line layer, identified
+    // by a unique string that is safe to use within a single loadRoutes call.
+    let _seq = 0;
+    const nextLayerId = () => `route-${Date.now()}-${_seq++}`;
 
-    const allVisibleLayers = []; // collect all route layers line lines and markers (used by both desktop and mobile)
+    // allVisibleLayers: used by highlight/restore helpers to iterate over every drawn route
+    const allVisibleLayers = [];
+    let hoveredHitId = null; // tracks the currently hovered hit layer (desktop only)
 
-    // Shared helper: highlight one route and dim all others.
-    // Used by desktop onOver and mobile tapHandler.
+    // applyStyles
+    // Applies an array of paint-property changes in a single GPU repaint.
+    // Uses map.style.batch() for zero visible delay when highlighting many layers at once.
+    // Falls back to sequential setPaintProperty on older builds where this is not available.
+    // * @param {Array<{id, prop, value}>} changes
+    function applyStyles(changes) {
+      const apply = () => changes.forEach(({ id, prop, value }) => {
+        // Kill the default MapLibre paint transition (~300ms) before each change so
+        // highlights and dims are instant with zero visible lag.
+        map.setPaintProperty(id, prop + '-transition', { duration: 0, delay: 0 }, { validate: false });
+        map.setPaintProperty(id, prop, value, { validate: false });
+      });
+      typeof map.style.batch === 'function' ? map.style.batch(apply) : apply();
+    }
+
+    // highlightRoute / restoreAllRoutes 
+    // Thickens and fully saturates one route while dimming all others to gray.
+    // * @param {Array<string>} activeSegmentLines. Layer IDs belonging to the active ride
     function highlightRoute(activeSegmentLines) {
+      const changes = [];
       allVisibleLayers.forEach(l => {
-        if (l.segmentLines === activeSegmentLines) {
-          // Highlight the active route
-          l.segmentLines.forEach(s => s.setStyle({ weight: l.isMobile ? 6.5 : 7, opacity: 1 }));
+        const isActive = l.segmentLines === activeSegmentLines;
+        if (isActive) {
+          // Active route: thicker and fully opaque, keep its own color
+          l.segmentLines.forEach(id => {
+            changes.push({ id, prop: 'line-color',   value: l.color });
+            changes.push({ id, prop: 'line-width',   value: l.isMobile ? 6 : 5.5 }); // Make the active route thicker than the default (5 on mobile, 4 on desktop) to make it stand out more
+            changes.push({ id, prop: 'line-opacity', value: 1 });
+          });
+          // Restore white base lines so unpaved dashes look correct on the highlighted route
+          l.whitelines.forEach(id => changes.push({ id, prop: 'line-opacity', value: 1 }));
         } else {
-          // Dim all other routes
-          l.segmentLines.forEach(s => s.setStyle({ opacity: 0.5, weight: 3, color: 'gray' }));
-          l.whitelines.forEach(w => w.setStyle({ opacity: 0 })); // hide white base so it doesn't cover the highlighted route or appear as white-ish in the dimmed routes
-          if (l.color !== 'black') { // for all colors except black
-            l.marker.getElement()?.style.setProperty('filter', 'grayscale(1) opacity(0.5)'); // grayscale(1) drains the color, opacity(0.5) dims it. This matches the feel of the grayed-out polylines
-          } else {
-            l.marker.getElement()?.style.setProperty('filter', 'opacity(0.4)');
-          }
+          // Inactive routes: thin gray so the active one stands out
+          l.segmentLines.forEach(id => {
+            changes.push({ id, prop: 'line-color',   value: 'gray' });
+            changes.push({ id, prop: 'line-width',   value: 3 });
+            changes.push({ id, prop: 'line-opacity', value: 0.5 });
+          });
+          // Hide white base lines on inactive unpaved segments
+          l.whitelines.forEach(id => changes.push({ id, prop: 'line-opacity', value: 0 }));
+          // Grayscale colored pins; plain opacity-dim for black pins
+          const filter = l.color !== 'black' ? 'grayscale(1) opacity(0.5)' : 'opacity(0.4)';
+          l.marker.getElement()?.style.setProperty('filter', filter);
         }
       });
+      applyStyles(changes);
     }
 
-    // Shared helper: restore all routes to their default style.
-    // Used by desktop onOut and mobile closeSheet.
-    restoreAllRoutes = function() {
+    // Restore all routes to their default (unselected) style.
+    restoreAllRoutes = () => {
+      const changes = [];
       allVisibleLayers.forEach(l => {
-        l.segmentLines.forEach(s => s.setStyle({ weight: l.isMobile ? 5 : 4, opacity: l.isMobile ? 0.85 : 0.8, color: l.color }));
-        l.whitelines.forEach(w => w.setStyle({ opacity: 1 })); // restore white base lines
-        l.marker.getElement()?.style.removeProperty('filter'); // restore marker color and opacity
+        l.segmentLines.forEach(id => {
+          changes.push({ id, prop: 'line-color',   value: l.color });
+          changes.push({ id, prop: 'line-width',   value: l.isMobile ? 5 : 4 });
+          changes.push({ id, prop: 'line-opacity', value: l.isMobile ? 0.85 : 0.8 });
+        });
+        // Restore white base lines under unpaved segments
+        l.whitelines.forEach(id => changes.push({ id, prop: 'line-opacity', value: 1 }));
+        // Restore pin marker color and opacity
+        l.marker.getElement()?.style.removeProperty('filter');
       });
+      applyStyles(changes);
     }
-    
-    routes.forEach((ride, idx) => {
-      if (ride.route && ride.route.length > 0) {
-        const color = ride.women_only
-          ? womenColors[womenIdx++ % womenColors.length]
-          : colors[regularIdx++ % colors.length];
-        ride.color = color; // store so openSheet can use it
-        const rideTime = formatTime12h(ride.date.split(" ")[1]); // convert time to 12-hour format (AM/PM)
 
-        // Flat [lat, lng] array for the full route — used for hit area and bounds fitting
-        const allLatLngs = ride.route.map(pt => [pt[0], pt[1]]);
+    // Per-ride rendering
+    routes.forEach(ride => {
+      if (!ride.route?.length) return; // skip empty routes
 
-        // Start marker coordinate: prefer explicit starting_location, fall back to first route point
-        const start = ride._offset_start || ride.starting_location || allLatLngs[0];
+      const color = ride.women_only
+        ? womenColors[womenIdx++ % womenColors.length]
+        : colors[regularIdx++ % colors.length];
+      ride.color = color; // stored so openSheet can access it
 
-        // Tooltip (only shown on desktop on hover)
-        const tooltipContent = `
-        <div style="font-size:1.6em; font-weight:700; text-transform:uppercase; color:#111; line-height:1.3; margin-bottom:6px;">${ride.club_name}</div>
-        <div style="font-size:1.4em; color:#888; margin-bottom:12px;">${ride.title}</div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">${rideTime}</span>
-          ${(ride.distance != null || ride.elevation_gain != null) ? 
-          '<span style="background:#f0f6ff; color:#007bff; border:1px solid #cce0ff; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">' +
-          (ride.distance != null ? `Distance: ${formatDistance(ride.distance)}` : '') +
-          (ride.distance != null && ride.elevation_gain != null ? ' | ' : '') +
-          (ride.elevation_gain != null ? `Elev Gain: ${formatElevation(ride.elevation_gain)}` : '') +
-          '</span>' : ''}
-          ${ride.women_only ? '<span style="background:#f3f0ff; color:#6f42c1; border:1px solid #d0c4f7; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">Women only</span>' : ''}
-        </div>`;
+      const allLatLngs = ride.route.map(pt => [pt[0], pt[1]]);
+      const start      = ride._offset_start || ride.starting_location || allLatLngs[0];
+      const rideTime   = formatTime12h(ride.date.split(" ")[1]);
 
-        // -------------------------------------------------------
-        // Build the visible polyline(s):
-        // SHOW_SURFACE=true  → one polyline per surface segment (solid/dashed)
-        // SHOW_SURFACE=false → one single solid polyline for the whole route
-        // -------------------------------------------------------
-        const whitelines = []; // white base lines under unpaved segments
-        function buildVisibleLines(targetGroup, lineColor, weight, opacity) {
-          if (SHOW_SURFACE) {
-            return splitBySurface(ride.route).flatMap(seg => {
-              if (seg.surface === 'unpaved') {
-                // White base line first, then colored dashes on top.
-                // If we just use dashed lines, when two unpaved segments overlap (e.g., out and back, loops...), 
-                // the two (or more) dashes would appear on top of each other and often merge into a solid line.
-                const whiteLine = L.polyline(seg.latlngs, {
-                  color: 'white',
-                  weight: weight + 2,
-                  opacity: 1,
-                  interactive: false
-                }).addTo(targetGroup);
-                whitelines.push(whiteLine);
-              }
-              return L.polyline(seg.latlngs, {
-                color: lineColor,
-                weight,
-                opacity,
-                dashArray: seg.surface === 'unpaved' ? '4, 7' : null // dashed line for unpaved. 4, 7 makes dashes (4px line, 7px gap).
-              }).addTo(targetGroup);
-            });
-          } else {
-            return [L.polyline(allLatLngs, { color: lineColor, weight, opacity }).addTo(targetGroup)];
-          }
+      // addPolylineLayer
+      // Registers one GeoJSON source + line layer on the map.
+      // @param {[number, number][]} coords — [lng, lat] pairs (MapLibre order)
+      // @param {{ color, weight, opacity, dashArray?, beforeId? }} opts
+      // @returns {string} the new layer ID
+        function addPolylineLayer(coords, opts) {
+          const id = nextLayerId();
+          map.addSource(id, {
+            type: 'geojson',
+            data: { type: 'Feature', geometry: { type: 'LineString', coordinates: coords } }
+          });
+          map.addLayer({
+            id: id,
+            type: 'line', source: id,
+            layout: { 'line-cap':  'round', 'line-join': 'round' },
+            paint: {
+              'line-color':   opts.color,
+              'line-width':   opts.weight,
+              'line-opacity': opts.opacity,
+              ...(opts.dashArray ? { 'line-dasharray': opts.dashArray } : {})
+            }
+          }, opts.beforeId);
+          map._routeLayerIds.push(id);
+          map._routeSourceIds.push(id);
+          return id;
         }
 
+        // Collects layer IDs for white base lines under unpaved dashes (used by highlight/restore)
+        const whitelines = [];
+
+        // buildVisibleLines
+        // One source per ride and 3 fixed layers per ride using filter expressions:
+        //   1. paved solid line
+        //   2. unpaved white base line (prevents dashes merging on overlapping segments)
+        //   3. unpaved dashed colored line on top
+        // @returns {{ segmentLines: string[], whitelines: string[] }}
+        function buildVisibleLines(lineColor, weight, opacity) {
+          const toML = latlngs => latlngs.map(([lat, lng]) => [lng, lat]);
+          const sourceId = nextLayerId();
+ 
+          if (!SHOW_SURFACE) {
+            // Single source + single layer for the whole route
+            map.addSource(sourceId, {
+              type: 'geojson',
+              data: { type: 'Feature', geometry: { type: 'LineString', coordinates: toML(allLatLngs) } }
+            });
+            const layerId = nextLayerId();
+            map.addLayer({
+              id: layerId, type: 'line', source: sourceId,
+              layout: { 'line-cap': 'round', 'line-join': 'round' },
+              paint: { 'line-color': lineColor, 'line-width': weight, 'line-opacity': opacity }
+            });
+            map._routeLayerIds.push(sourceId, layerId);
+            map._routeSourceIds.push(sourceId);
+            return { segmentLines: [layerId], whitelines: [] };
+          }
+ 
+          // Build one FeatureCollection with all segments tagged by surface type.
+          // This is a single addSource call regardless of how many segments there are.
+          const segments = splitBySurface(ride.route);
+          const features = segments.map(seg => ({
+            type: 'Feature',
+            properties: { surface: seg.surface },
+            geometry: { type: 'LineString', coordinates: toML(seg.latlngs) }
+          }));
+ 
+          map.addSource(sourceId, {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features }
+          });
+          map._routeSourceIds.push(sourceId);
+ 
+          // Layer 1: paved solid line (filter: surface === 'paved')
+          const pavedId = nextLayerId();
+          map.addLayer({
+            id: pavedId, type: 'line', source: sourceId,
+            filter: ['==', ['get', 'surface'], 'paved'],
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: { 'line-color': lineColor, 'line-width': weight, 'line-opacity': opacity }
+          });
+          map._routeLayerIds.push(pavedId);
+ 
+          // Layer 2: unpaved white base line. Drawn first so colored dashes sit on top.
+          // Prevents dashes from merging into a solid line on out-and-back or loop routes.
+          const whiteId = nextLayerId();
+          map.addLayer({
+            id: whiteId, type: 'line', source: sourceId,
+            filter: ['==', ['get', 'surface'], 'unpaved'],
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: { 'line-color': 'white', 'line-width': weight, 'line-opacity': 1 }
+          });
+          map._routeLayerIds.push(whiteId);
+ 
+          // Layer 3: unpaved dashed colored line on top of white base
+          const dashedId = nextLayerId();
+          map.addLayer({
+            id: dashedId, type: 'line', source: sourceId,
+            filter: ['==', ['get', 'surface'], 'unpaved'],
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: {
+              'line-color': lineColor,
+              'line-width': weight,
+              'line-opacity': opacity,
+              'line-dasharray': [2 / weight, 6 / weight]
+            }
+          });
+          map._routeLayerIds.push(dashedId);
+ 
+          return { segmentLines: [pavedId, dashedId], whitelines: [whiteId] };
+        }
+
+        // Hit area
+        // A wide transparent line layer placed over the route for easier
+        // clicking/tapping (finger-friendly on mobile, cursor-friendly on desktop).
+        function addHitLayer(hitWidth) {
+          const hitCoords = allLatLngs.map(([lat, lng]) => [lng, lat]);
+          const hitId = nextLayerId();
+          map.addSource(hitId, {
+            type: 'geojson',
+            data: { type: 'Feature', geometry: { type: 'LineString', coordinates: hitCoords } }
+          });
+          map.addLayer({ id: hitId, type: 'line', source: hitId,
+            paint: { 'line-color': 'transparent', 'line-width': hitWidth, 'line-opacity': 0 }
+          });
+          map._routeLayerIds.push(hitId);
+          map._routeSourceIds.push(hitId);
+          return hitId;
+        }
+        
         if (isTouchDevice) {
-          // -------------------------------------------------------
-          // MOBILE: tap route → bottom sheet slides up with details
-          // -------------------------------------------------------
+          // MOBILE
+          // Tap route → bottom sheet slides up with details
 
-          // Visible segment lines (solid or dashed per surface)
-          const segmentLines = buildVisibleLines(fg, color, 5, 0.85);
-
-          // Wide invisible polyline over the full route for easier finger tapping
-          // Added AFTER segmentLines so it sits on top and captures touch events reliably
-          const hitArea = L.polyline(allLatLngs, { weight: 40, opacity: 0, interactive: true }).addTo(fg);
+          const { segmentLines, whitelines } = buildVisibleLines(color, 5, 0.85);
+          const hitId        = addHitLayer(40);
+          const markerEl     = createPinMarker([start[1], start[0]], color).addTo(map);
+          map._routeMarkers.push(markerEl);
+          allVisibleLayers.push({ segmentLines, whitelines, marker: markerEl, color, isMobile: true });
 
           // Tap handler: highlight this route, dim all others, open the bottom sheet
-          const tapHandler = (e) => {
-            L.DomEvent.stopPropagation(e);
-            restoreAllRoutes(); // restore any previously highlighted route (if any) to normal style
-            highlightRoute(segmentLines); // highlight this route and dim all others
-            currentHL = segmentLines; // store reference so closeSheet can restore on dismiss
+          const tapHandler = e => {
+            e.originalEvent?.stopPropagation();
+            restoreAllRoutes();
+            highlightRoute(segmentLines);
+            currentHL = segmentLines;
             openSheet(ride);
           };
-          hitArea.on('click', tapHandler);
 
-          // Start marker (also opens the sheet when tapped)
-          const marker = createPinMarker(start, color)
-            .addTo(fg).on('click', (e) => { L.DomEvent.stopPropagation(e); tapHandler(e); });
-
-          // Store segment lines, whitelines, and marker for cross-route dimming (shared with desktop logic)
-          // isMobile flag lets the shared helpers apply the correct weights
-          allVisibleLayers.push({ segmentLines, whitelines, marker, color, isMobile: true });
+          map.on('click', hitId, e => { e.originalEvent.stopPropagation(); tapHandler(e); });
+          markerEl.getElement().addEventListener('click', e => { e.stopPropagation(); tapHandler({ originalEvent: e }); });
 
         } else {
-          // -------------------------------------------------------
-          // DESKTOP: wide invisible hit area + visible polyline.
+          // DESKTOP
           // Hover highlights the route, dims others, click opens Strava.
-          // -------------------------------------------------------
 
-          // Visible segment lines (solid or dashed per surface)
-          // Added FIRST so the hit area (added next) sits on top and captures mouse events
-          const segmentLines = buildVisibleLines(fg, color, 4, 0.8);
+          const { segmentLines, whitelines } = buildVisibleLines(color, 4, 0.8);
+          const hitId        = addHitLayer(20);
+          const markerEl     = createPinMarker([start[1], start[0]], color).addTo(map);
+          map._routeMarkers.push(markerEl);
+          allVisibleLayers.push({ segmentLines, whitelines, marker: markerEl, color, isMobile: false });
 
-          // Wide invisible polyline for easier mouse hovering/clicking. Added ON TOP of segment lines
-          const hitArea = L.polyline(allLatLngs, { weight: 20, opacity: 0 }).addTo(fg);
-          hitArea.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
-
-          // Start marker (on top of everything for this route)
-          const marker = createPinMarker(start, color).addTo(fg);
-          marker.bindTooltip(tooltipContent, { sticky: true, className: 'ride-tooltip' });
-
-          // Store segment lines, whitelines, marker, and original color for cross-route dimming
-          // isMobile: false lets the shared helpers apply desktop weights and marker filters
-          allVisibleLayers.push({ segmentLines, whitelines, marker, color, isMobile: false });
-
-          // Hover on: highlight this route and dim all others (shared logic with mobile)
-          const onOver = () => {
+          // HTML injected into the hover tooltip popup
+          const tooltipContent = buildTooltipHTML(ride, rideTime);
+ 
+          // Opens a popup anchored to the cursor position.
+          function showPopup(lngLat) {
+            if (activePopup) activePopup.remove();
+            activePopup = new maplibregl.Popup({
+              closeButton: false, closeOnClick: false,
+              className: 'ride-tooltip', maxWidth: 'none'
+            }).setLngLat(lngLat).setHTML(tooltipContent).addTo(map);
+          }
+ 
+          map.on('mouseenter', hitId, e => {
+            hoveredHitId = hitId;
+            map.getCanvas().style.cursor = 'pointer';
             highlightRoute(segmentLines);
-            marker.setOpacity(1); // ensure marker is fully visible (may have been dimmed by a previous hover)
-          };
-
-          // Hover off: restore all routes to their default style (shared logic with mobile)
-          const onOut = () => restoreAllRoutes();
-
-          // Click: open Strava event in a new tab
-          const onClick = () => { if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer'); };
-
-          // hitArea handles all mouse events (it sits on top of segment lines)
-          hitArea.on('mouseover', onOver).on('mouseout', onOut).on('click', onClick);
-          // Marker needs its own handlers since it's outside the hitArea
-          marker.on('mouseover', onOver).on('mouseout', onOut).on('click', onClick);
+            showPopup(e.lngLat);
+          });
+          map.on('mousemove', hitId, e => { activePopup?.setLngLat(e.lngLat); });
+          map.on('mouseleave', hitId, () => {
+            // Guard: only restore if the mouse hasn't already entered a different route
+            // (mouseenter on the new route fires before mouseleave on the old one)
+            if (hoveredHitId === hitId) {
+              hoveredHitId = null;
+              map.getCanvas().style.cursor = '';
+              restoreAllRoutes();
+              if (activePopup) { activePopup.remove(); activePopup = null; }
+            }
+          });
+          map.on('click', hitId, e => {
+            e.originalEvent?.stopPropagation();
+            if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer');
+          });
+ 
+          // Marker hover/click mirrors the hit-layer behaviour
+          markerEl.getElement().addEventListener('mouseenter', () => highlightRoute(segmentLines));
+          markerEl.getElement().addEventListener('mouseleave', () => restoreAllRoutes());
+          markerEl.getElement().addEventListener('click', e => {
+            e.stopPropagation();
+            showPopup(markerEl.getLngLat());
+            if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer');
+          });
         }
-      }
-    });
-
-    // Fit map to show all routes, with 5% padding on each side
-    const bounds = fg.getBounds();
-    if (bounds.isValid()) {
-      const mapSize = map.getSize();
-      const padX = Math.round(mapSize.x * 0.05);
-      const padY = Math.round(mapSize.y * 0.05);
-      map.fitBounds(bounds, {
-        paddingTopLeft: [padX, padY],
-        paddingBottomRight: [padX, padY],
-        maxZoom: defaultZoom // Fit to bounds but don't zoom in more than defaultZoom
       });
+
+    // Fit map to routes
+    // Compute the bounding box of all route coordinates and zoom to fit with 5% padding.
+    let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity;
+    routes.forEach(ride => {
+      ride.route?.forEach(pt => {
+        if (pt[1] < minLng) minLng = pt[1];
+        if (pt[1] > maxLng) maxLng = pt[1];
+        if (pt[0] < minLat) minLat = pt[0];
+        if (pt[0] > maxLat) maxLat = pt[0];
+      });
+    });
+    if (minLng !== Infinity) {
+      const mapEl = document.getElementById('map');
+      const padX  = Math.round(mapEl.clientWidth  * 0.05);
+      const padY  = Math.round(mapEl.clientHeight * 0.05);
+      map.fitBounds(
+        [[minLng, minLat], [maxLng, maxLat]], // [[west, south], [east, north]]
+        { padding: { top: padY, bottom: padY, left: padX, right: padX }, maxZoom: DEFAULT_ZOOM }
+      );
     }
   }
 
+  // Desktop tooltip HTML builder
+  // Returns the inner HTML for the desktop hover popup.
+  // Kept as a separate function to avoid cluttering the per-ride loop.
+  function buildTooltipHTML(ride, rideTime) {
+    const badge = (text, extra = '') =>
+      `<span style="background:${extra ? '#f3f0ff' : '#f0f6ff'}; color:${extra ? '#6f42c1' : '#007bff'}; border:1px solid ${extra ? '#d0c4f7' : '#cce0ff'}; border-radius:20px; padding:4px 12px; font-size:1.2em; font-weight:600;">${text}</span>`;
+ 
+    const distElev = [
+      ride.distance      != null ? `Distance: ${formatDistance(ride.distance)}`           : '',
+      ride.elevation_gain != null ? `Elev Gain: ${formatElevation(ride.elevation_gain)}` : '',
+    ].filter(Boolean).join(' | ');
+ 
+    return `
+      <div style="font-size:1.6em; font-weight:700; text-transform:uppercase; color:#111; line-height:1.3; margin-bottom:6px;">${ride.club_name}</div>
+      <div style="font-size:1.4em; color:#888; margin-bottom:12px;">${ride.title}</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        ${badge(rideTime)}
+        ${distElev ? badge(distElev) : ''}
+        ${ride.women_only ? badge('Women only', 'women') : ''}
+      </div>`;
+  }
   // -------------------------------
   // Generate 7-day calendar
   // -------------------------------
-  // Local date string in YYYY-MM-DD format for comparison with ride dates
+  // Local date string in YYYY-MM-DD format using local timezone for comparison with ride dates
   function formatLocalDate(date) {
   return date.getFullYear() + "-" +
          String(date.getMonth() + 1).padStart(2,'0') + "-" +
          String(date.getDate()).padStart(2,'0');
   }
+  
+  // Builds the 7-day calendar strip, then auto-selects the first day with rides.
   function generateCalendar() {
     const calendarDiv = document.getElementById("calendar");
-    const today = new Date();
-    const weekdays = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
-    
+    const today       = new Date();
+    const WEEKDAYS    = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
     let firstRideDate = null;
     let firstRideCol = null;
 
     for (let i = 0; i < 7; i++) { // We can easily change this to show more days if desired. Currently: 7
-      const date = new Date();
+      const date    = new Date(today);
       date.setDate(today.getDate() + i);
-
       const isoDate = formatLocalDate(date);
-
-      const dayName = weekdays[date.getDay()];
-      const formattedDate = date.toLocaleString('en-US', { month: 'short', day: 'numeric' }); // e.g. Jun 1
-
-      const col = document.createElement("div");
-      col.className = "day-column";
-
-      const rides = ridesByDate[isoDate] || [];
-
-      if (rides.length) {
-        col.classList.add("ride-day"); // highlight days with rides
-      }
-
-      // Calendar text
+      const rides   = ridesByDate[isoDate] || [];
+ 
+      const col     = document.createElement("div");
+      col.className = "day-column" + (rides.length ? " ride-day" : "");
+      col.dataset.date = isoDate;
+ 
+      // Day-name label (e.g. "MON")
       const nameDiv = document.createElement("div");
       nameDiv.className = "day-name";
-      nameDiv.innerText = dayName;
-
+      nameDiv.innerText = WEEKDAYS[date.getDay()];
+ 
+      // Date label (e.g. "(Apr 14)")
       const dateDiv = document.createElement("div");
       dateDiv.className = "day-date";
-      dateDiv.innerText = `(${formattedDate})`;
-
-      col.appendChild(nameDiv);
-      col.appendChild(dateDiv);
-
-      col.dataset.date = isoDate;  // Enables Metric toggle refresh
-
+      dateDiv.innerText = `(${date.toLocaleString('en-US', { month: 'short', day: 'numeric' })})`;
+ 
+      col.append(nameDiv, dateDiv);
       col.onclick = () => {
-        // Remove previous selection
         document.querySelectorAll('.day-column').forEach(el => el.classList.remove('selected'));
         col.classList.add('selected');
-
-        // Load routes for this date
         loadRoutes(isoDate);
-      }
-
-      // remember the first day that has rides
-      if (!firstRideDate && ridesByDate[isoDate]?.length) {
+      };
+ 
+      if (!firstRideDate && rides.length) {
         firstRideDate = isoDate;
-        firstRideCol = col;
+        firstRideCol  = col;
       }
-
+ 
       calendarDiv.appendChild(col);
     }
-
-    // Load the first day with rides by default (or just show map if no rides)
+ 
+    // Auto-select the first day that has rides, or fall back to default map view
     if (firstRideDate) {
       firstRideCol.classList.add('selected');
       loadRoutes(firstRideDate);
-    } else { // No rides → just show default map view
-      map.setView(defaultCenter, defaultZoom);
+    } else {
+      map.jumpTo({ center: [DEFAULT_CENTER[1], DEFAULT_CENTER[0]], zoom: DEFAULT_ZOOM });
     }
+  }
+ 
+})();
+</script>
+
+<!-- Service Worker (cache vector tiles) -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch(err => console.error('Sevive Worker registration failed:', err));
+  });
 }
 </script>
 
-<!-- Tracking for analytics about visits -->
+<!-- Analytics (GoatCounter: privacy-friendly, no cookies) -->
 <script data-goatcounter="https://rbergua.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+        async src="//gc.zgo.at/count.js">
+</script>
 </body>
 </html>
