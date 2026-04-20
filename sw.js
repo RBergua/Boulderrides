@@ -26,7 +26,7 @@
 //
 // Tiles are kept for 120 days. After that they expire and are
 // re-fetched fresh on the next visit. The total cache size for
-// a typical Boulder-area session should be around 25 MB per user
+// a typical Boulder-area session should be around 50 MB per user
 // including generous zomming in and out.
 //
 // Unlike the regular browser HTTP cache, this cache lasts much 
@@ -40,6 +40,18 @@
 // the map appears fully rendered in milliseconds. Noticeably
 // faster than the first load, and completely unaffected by the
 // user's network speed or MapTiler's server response time.
+//
+// CACHE LIFECYCLE
+// ---------------
+// On activation, two things happen automatically:
+//   1. Any old cache versions are deleted.
+//   2. A sweep evicts every tile already older than 120 days, so the
+//      cache always starts clean and never silently accumulates old
+//      tiles.
+//
+// To force every user to start from a completely empty cache (e.g.
+// after a MapTiler style update), bump CACHE_NAME to v2. The activate
+// listener will automatically delete v1 on every device.
 //
 // DEPLOYMENT
 // ----------
@@ -64,16 +76,47 @@
 //
 // Step 3 — Confirm the cache contents:
 //   Cache size:    Application tab → Storage (left sidebar) → maptiler-tiles-v2
-//   Cached files:  Application tab → Cache Storage (left sidebar) → maptiler-tiles-v2 → Cached Requests
+//   Cached files:  Application tab → Cache Storage (left sidebar) → maptiler-tiles-v1 → Cached Requests
 // ============================================================
 
-const CACHE_NAME  = 'maptiler-tiles-v2';  // bump to 'v3 to force-clear all cached tiles
-const MAX_AGE_SEC = 120 * 24 * 3600;       // 120 days in seconds
+const CACHE_NAME  = 'maptiler-tiles-v1';  // bump to v2 to force-clear all cached tiles
+const MAX_AGE_SEC = 120 * 24 * 3600;      // 120 days in seconds
 
 function normalizeRequest(request) {
   const url = new URL(request.url);
   return new Request(url.origin + url.pathname);
 }
+
+// Runs once when this SW version activates (fresh install or after a CACHE_NAME bump).
+// 1. Deletes every cache that isn't CACHE_NAME (cleans up old versions).
+// 2. Sweeps the current cache and deletes anything already older than MAX_AGE_SEC,
+//    so the cache never silently accumulates tiles and grows in size.
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(async keys => {
+
+      // 1. Delete old cache versions
+      await Promise.all(
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      );
+
+      // 2. Sweep expired tiles out of the current cache
+      const cache   = await caches.open(CACHE_NAME);
+      const requests = await cache.keys();
+      const now     = Date.now();
+
+      await Promise.all(
+        requests.map(async req => {
+          const res        = await cache.match(req);
+          const cachedTime = res?.headers.get('sw-cache-time');
+          if (!cachedTime) return;
+          const age = (now - parseInt(cachedTime, 10)) / 1000;
+          if (age >= MAX_AGE_SEC) await cache.delete(req);
+        })
+      );
+    })
+  );
+});
 
 self.addEventListener('fetch', event => {
   const url = event.request.url;
