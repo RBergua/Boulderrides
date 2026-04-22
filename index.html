@@ -560,11 +560,6 @@
   // Rides grouped by date: { "YYYY-MM-DD": [ride, ride, ...], ... }
   let ridesByDate = {};
 
-  // Cache bust: changes once per hour.
-  // This lets the browser cache the file for up to 1 hour (fast repeat visits)
-  // while ensuring data is never more than 1 hour old.
-  const cacheBust = Math.floor(Date.now() / (1000 * 60 * 60));
-
   // Fetch ride data immediately, in parallel with the map style loading.
   const ridesReady = fetch('club_rides.json')
     .then(r => r.json())
@@ -582,6 +577,26 @@
   // finishes last triggers generateCalendar().
   map.on('load', () => {
     ridesReady.then(() => generateCalendar());
+  });
+
+  // Re-fetch rides from JSON file when the user brings the tab or app back to the foreground.
+  // This is especially useful for PWA (app-like) users who may leave the app running in the background.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      fetch('club_rides.json')
+        .then(r => r.json())
+        .then(rides => {
+          ridesByDate = {}; // clear old data
+          rides.forEach(ride => {
+            const date = ride.date.split(" ")[0];
+            if (!ridesByDate[date]) ridesByDate[date] = [];
+            ridesByDate[date].push(ride);
+          });
+          // Re-render whichever day is currently selected
+          const selected = document.querySelector('.day-column.selected');
+          if (selected?.dataset.date) loadRoutes(selected.dataset.date);
+        });
+    }
   });
 
   // -------------------------------
