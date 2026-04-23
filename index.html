@@ -1103,12 +1103,13 @@
           });
           map.on('click', hitId, e => {
             e.originalEvent?.stopPropagation();
+            if (hoveredHitId !== hitId) return; // Select only the route hovered (not one underneath) 
             if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer');
           });
  
           // Marker hover/click mirrors the hit-layer behaviour
           markerEl.getElement().addEventListener('mouseenter', () => {
-            if (!hoveredHitId) {          // ← add this guard
+            if (!hoveredHitId) {
               highlightRoute(segmentLines);
               showPopup(markerEl.getLngLat());
             }
