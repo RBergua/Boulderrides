@@ -1107,11 +1107,20 @@
           });
  
           // Marker hover/click mirrors the hit-layer behaviour
-          markerEl.getElement().addEventListener('mouseenter', () => highlightRoute(segmentLines));
-          markerEl.getElement().addEventListener('mouseleave', () => restoreAllRoutes());
+          markerEl.getElement().addEventListener('mouseenter', () => {
+            if (!hoveredHitId) {          // ← add this guard
+              highlightRoute(segmentLines);
+              showPopup(markerEl.getLngLat());
+            }
+          });
+          markerEl.getElement().addEventListener('mouseleave', () => {
+            if (!hoveredHitId) {
+              restoreAllRoutes();
+              if (activePopup) { activePopup.remove(); activePopup = null; }
+            }
+          });
           markerEl.getElement().addEventListener('click', e => {
             e.stopPropagation();
-            showPopup(markerEl.getLngLat());
             if (ride.url) window.open(ride.url, '_blank', 'noopener,noreferrer');
           });
         }
