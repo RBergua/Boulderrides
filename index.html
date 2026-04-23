@@ -695,37 +695,92 @@
   // Setting this to false draws every route as a single solid line.
   const SHOW_SURFACE = true;
 
-  // Split a route into contiguous segments by surface type.
-  // Each segment: { latlngs: [[lat, lng], ...], surface: 'paved'|'unpaved' }
+  // Build a route's draw segments in a single pass over the raw point array.
+  // Each point is [lat, lng, surface] where surface is 'paved' or 'unpaved'.
+  // Returns an array of segments: { latlngs: [[lat, lng], ...], surface: 'paved'|'unpaved' }
   //
   // Step 1 — smooth: isolated single unpaved points flanked by paved on both
   // sides are promoted to paved. They can't form a visible dashed line and are
-  // almost certainly misclassifications. Two or more consecutive unpaved points
-  // are left alone as a genuine unpaved stretch.
+  // almost certainly GPS misclassifications. Two or more consecutive unpaved
+  // points are left alone as a genuine unpaved stretch.
   //
-  // Step 2 — split: route is cut into contiguous same-surface segments.
-  // Each segment overlaps by one point with the next so polylines connect
-  // seamlessly without gaps.
-  function splitBySurface(route) {
-    // Step 1: smooth out lone unpaved points
+  // Step 2 — single pass: walk every edge (point-to-point pair) of the route.
+  // A new chunk is started whenever the surface type changes OR a duplicate
+  // unpaved edge is encountered. Chunks are emitted as segments when closed.
+  //
+  // Unpaved deduplication (handles out-and-backs and partial backtracks):
+  // - Each unpaved edge is converted to a direction-independent key on a
+  //   snapped ~8 m grid (A→B and B→A produce the same key).
+  // - A single "seen" set covers the entire route, so an edge traversed on the
+  //   way out is skipped on the return regardless of where the backtrack ends.
+  // - Paved edges are never deduplicated. Stacked solid lines are fine.
+  //
+  // Consecutive segments overlap by one point at their boundary so polylines
+  // connect seamlessly with no gaps on the map.
+  function buildSegments(route) {
+    if (route.length < 2) return [];
+
+    // ── Step 1: smooth out lone unpaved points ──────────────────────────────
     const surfaces = route.map(pt => pt[2]);
     const smoothed = surfaces.map((s, i) =>
       (s === 'unpaved' && surfaces[i-1] === 'paved' && surfaces[i+1] === 'paved') ? 'paved' : s
     );
 
-    // Step 2: split into contiguous segments, overlapping by 1 point at boundaries
-    // so consecutive polylines connect seamlessly with no gaps.
+    // ── Unpaved edge deduplication helpers ──────────────────────────────────
+    const SNAP = 8; // grid cell size in meters. Decrease to be more strict about what counts as "same edge"
+    const M    = 111111; // approx metres per degree of latitude
+
+    // Project [lat, lng] onto a flat snapped grid (integer cell coordinates).
+    // The longitude scale is corrected for latitude so cells stay ~square.
+    function snapToGrid([lat, lng]) {
+      return [
+        Math.round(lat * M / SNAP),
+        Math.round(lng * M * Math.cos(lat * Math.PI / 180) / SNAP)
+      ];
+    }
+
+    // Build a direction-independent key for the edge between points a and b.
+    function edgeKey(a, b) {
+      const [r1, c1] = snapToGrid(a);
+      const [r2, c2] = snapToGrid(b);
+      const t1 = `${r1}§${c1}`;
+      const t2 = `${r2}§${c2}`;
+      return t1 < t2 ? `${t1}|${t2}` : `${t2}|${t1}`;
+    }
+
+    // ── Step 2: single pass. Emit segments ─────────────────────────────────
     const segments = [];
-    let start = 0;
-    for (let i = 1; i <= route.length; i++) {
-      if (i === route.length || smoothed[i] !== smoothed[start]) {
-        segments.push({
-          latlngs: route.slice(start, Math.min(i + 1, route.length)).map(pt => [pt[0], pt[1]]),
-          surface: smoothed[start]
-        });
-        start = i;
+    const seen     = new Set(); // unpaved edges already drawn; spans the whole route
+    let chunk        = [route[0]]; // points accumulated for the current segment
+    let chunkSurface = smoothed[0];
+
+    function flushChunk() {
+      if (chunk.length > 1) {
+        segments.push({ latlngs: chunk.map(pt => [pt[0], pt[1]]), surface: chunkSurface });
       }
     }
+
+    for (let i = 1; i < route.length; i++) {
+      const pt   = route[i];
+      const surf = smoothed[i];
+      const key  = surf === 'unpaved' ? edgeKey([route[i-1][0], route[i-1][1]], [pt[0], pt[1]]) : null;
+
+      const surfaceChanged = surf !== chunkSurface;
+      const isDuplicate    = key !== null && seen.has(key);
+
+      if (surfaceChanged || isDuplicate) {
+        // Close the current chunk. If the surface changed (not a duplicate),
+        // carry the boundary point forward so the next segment connects cleanly.
+        flushChunk();
+        chunk        = surfaceChanged && !isDuplicate ? [route[i-1]] : [];
+        chunkSurface = surf;
+      }
+
+      if (key && !seen.has(key)) seen.add(key); // mark edge as drawn
+      if (!isDuplicate) chunk.push(pt);          // skip duplicate unpaved edges
+    }
+
+    flushChunk(); // emit whatever is left
     return segments;
   }
 
@@ -939,7 +994,7 @@
  
           // Build one FeatureCollection with all segments tagged by surface type.
           // This is a single addSource call regardless of how many segments there are.
-          const segments = splitBySurface(ride.route);
+          const segments = buildSegments(ride.route);
           const features = segments.map(seg => ({
             type: 'Feature',
             properties: { surface: seg.surface },
