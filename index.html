@@ -727,25 +727,11 @@
     );
 
     // ── Unpaved edge deduplication helpers ──────────────────────────────────
-    const SNAP = 8; // grid cell size in meters. Decrease to be more strict about what counts as "same edge"
-    const M    = 111111; // approx metres per degree of latitude
-
-    // Project [lat, lng] onto a flat snapped grid (integer cell coordinates).
-    // The longitude scale is corrected for latitude so cells stay ~square.
-    function snapToGrid([lat, lng]) {
-      return [
-        Math.round(lat * M / SNAP),
-        Math.round(lng * M * Math.cos(lat * Math.PI / 180) / SNAP)
-      ];
-    }
-
-    // Build a direction-independent key for the edge between points a and b.
-    function edgeKey(a, b) {
-      const [r1, c1] = snapToGrid(a);
-      const [r2, c2] = snapToGrid(b);
-      const t1 = `${r1}§${c1}`;
-      const t2 = `${r2}§${c2}`;
-      return t1 < t2 ? `${t1}|${t2}` : `${t2}|${t1}`;
+    const SNAP = 8, M = 111111; // grid cell size (m), metres per degree latitude
+    function edgeKey([lat1, lng1], [lat2, lng2]) {
+      const snap = (lat, lng) => [Math.round(lat * M / SNAP), Math.round(lng * M * Math.cos(lat * Math.PI / 180) / SNAP)];
+      const [a, b] = [snap(lat1, lng1).join('§'), snap(lat2, lng2).join('§')];
+      return a < b ? `${a}|${b}` : `${b}|${a}`;
     }
 
     // ── Step 2: single pass. Emit segments ─────────────────────────────────
@@ -754,33 +740,23 @@
     let chunk        = [route[0]]; // points accumulated for the current segment
     let chunkSurface = smoothed[0];
 
-    function flushChunk() {
-      if (chunk.length > 1) {
-        segments.push({ latlngs: chunk.map(pt => [pt[0], pt[1]]), surface: chunkSurface });
-      }
-    }
-
     for (let i = 1; i < route.length; i++) {
-      const pt   = route[i];
-      const surf = smoothed[i];
-      const key  = surf === 'unpaved' ? edgeKey([route[i-1][0], route[i-1][1]], [pt[0], pt[1]]) : null;
-
+      const pt = route[i], surf = smoothed[i];
+      const key = surf === 'unpaved' ? edgeKey([route[i-1][0], route[i-1][1]], [pt[0], pt[1]]) : null;
       const surfaceChanged = surf !== chunkSurface;
       const isDuplicate    = key !== null && seen.has(key);
-
+ 
       if (surfaceChanged || isDuplicate) {
-        // Close the current chunk. If the surface changed (not a duplicate),
-        // carry the boundary point forward so the next segment connects cleanly.
-        flushChunk();
+        if (chunk.length > 1) segments.push({ latlngs: chunk.map(pt => [pt[0], pt[1]]), surface: chunkSurface });
         chunk        = surfaceChanged && !isDuplicate ? [route[i-1]] : [];
         chunkSurface = surf;
       }
-
-      if (key && !seen.has(key)) seen.add(key); // mark edge as drawn
-      if (!isDuplicate) chunk.push(pt);          // skip duplicate unpaved edges
+ 
+      if (key && !seen.has(key)) seen.add(key);
+      if (!isDuplicate) chunk.push(pt);
     }
-
-    flushChunk(); // emit whatever is left
+ 
+    if (chunk.length > 1) segments.push({ latlngs: chunk.map(pt => [pt[0], pt[1]]), surface: chunkSurface });
     return segments;
   }
 
@@ -968,7 +944,7 @@
         // buildVisibleLines
         // One source per ride and 3 fixed layers per ride using filter expressions:
         //   1. paved solid line
-        //   2. unpaved white base line (prevents dashes merging on overlapping segments)
+        //   2. unpaved white base line (prevents dashes merging on overlapping routes)
         //   3. unpaved dashed colored line on top
         // @returns {{ segmentLines: string[], whitelines: string[] }}
         function buildVisibleLines(lineColor, weight, opacity) {
@@ -1018,7 +994,7 @@
           map._routeLayerIds.push(pavedId);
  
           // Layer 2: unpaved white base line. Drawn first so colored dashes sit on top.
-          // Prevents dashes from merging into a solid line on out-and-back or loop routes.
+          // Prevents dashes from merging into a solid line on overlapping routes.
           const whiteId = nextLayerId();
           map.addLayer({
             id: whiteId, type: 'line', source: sourceId,
