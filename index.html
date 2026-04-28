@@ -743,7 +743,7 @@
     if (route.length < 2) return [];
 
     // ── Step 1: smooth out lone unpaved points ──────────────────────────────
-    const surfaces = route.map(pt => pt[2]);
+    const surfaces = route.map(pt => (pt[2] === 'unpaved' ? 'unpaved' : 'paved')); // Only an explicit 'unpaved' string gets the dashed treatment. If there is no surface data available (e.g., null), it will be treated as a continuous line. 
     const smoothed = surfaces.map((s, i) =>
       (s === 'unpaved' && surfaces[i-1] === 'paved' && surfaces[i+1] === 'paved') ? 'paved' : s
     );
