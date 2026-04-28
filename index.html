@@ -756,7 +756,7 @@
       return a < b ? `${a}|${b}` : `${b}|${a}`;
     }
 
-    // ── Step 2: single pass. Emit segments ─────────────────────────────────
+    // ── Step 2: Grouping consecutive points by surface type ──────────────────
     const segments = [];
     const seen     = new Set(); // unpaved edges already drawn; spans the whole route
     let chunk        = [route[0]]; // points accumulated for the current segment
