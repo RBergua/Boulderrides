@@ -601,23 +601,73 @@
     ridesReady.then(() => generateCalendar());
   });
 
+  // -------------------------------
+  // Old routes data in long-lived sessions
+  // -------------------------------
   // Re-fetch rides from JSON file when the user brings the tab or app back to the foreground.
-  // This is especially useful for PWA (app-like) users who may leave the app running in the background.
+  let lastDataString = null; // Snapshot of the last fetched data to detect changes
+  let lastFetchTime = 0; // Last time that we performed a fetch
+  
+  // Minimum time between refreshes (in ms)
+  // Prevents excessive network calls when users rapidly switch tabs/apps
+  const MIN_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  
+  // Listen for when the tab/app becomes visible again
+  // This is especially important for PWA/mobile users who background the app
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      fetch('club_rides.json')
+      //console.log('Tab or app became visible!'); // Testing
+      const now = Date.now();
+
+      // If we fetched club_rides.json recently, skip this refresh
+      // Avoids unnecessary repeated requests from quick tab switching
+      if (now - lastFetchTime < MIN_REFRESH_INTERVAL) return;
+
+      // Update last fetch timestamp:
+      lastFetchTime = now;
+
+      // Fetch the latest JSON data
+      // cache: 'no-store' ensures we bypass browser/PWA caching for the JSON file with the routes
+      fetch('club_rides.json', { cache: 'no-store' })
         .then(r => r.json())
         .then(rides => {
-          ridesByDate = {}; // clear old data
+
+          // Convert data to a string so we can compare with previous version
+          // This is a simple way to detect if anything actually changed
+          const newDataString = JSON.stringify(rides);
+
+          // If data hasn't changed, skip all updates (no re-render needed)
+          if (newDataString === lastDataString) {
+            //console.log('No JSON data change, skipping routes update'); // Testing
+            return;
+          }
+
+          // Save the new snapshot for future comparisons
+          lastDataString = newDataString;
+
+          // Rebuild ridesByDate from scratch with fresh data
+          const newRidesByDate = {};
           rides.forEach(ride => {
-            const date = ride.date.split(" ")[0];
-            if (!ridesByDate[date]) ridesByDate[date] = [];
-            ridesByDate[date].push(ride);
+            const date = ride.date.split(" ")[0]; // Extract YYYY-MM-DD
+            if (!newRidesByDate[date]) newRidesByDate[date] = [];
+            newRidesByDate[date].push(ride);
           });
-          // Re-render whichever day is currently selected
+
+          // Swap only after fully built (prevents partial state issues)
+          ridesByDate = newRidesByDate;
+
+          // Re-render the currently selected day
+          // This keeps the user's context intact instead of resetting the UI
           const selected = document.querySelector('.day-column.selected');
           if (selected?.dataset.date) loadRoutes(selected.dataset.date);
-        });
+          //console.log('Ride data refreshed'); // Testing
+        })
+        .catch(() => {
+        // Fail silently:
+        // - Keep existing ridesByDate
+        // - Do not interrupt the user experience
+        // - Next visibility event will try again
+      });
     }
   });
 
