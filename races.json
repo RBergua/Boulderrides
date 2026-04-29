@@ -206,30 +206,6 @@
     "date": "2026-07-08"
   },
   {
-    "name": "Triple Bypass",
-    "url": "https://www.triplebypass.org",
-    "reg_link": "https://runsignup.com/Race/CO/Evergreen/TripleBypass",
-    "location": "Evergreen",
-    "latitude": 39.75821,
-    "longitude": -105.684059,
-    "type": [
-      "Gran Fondo"
-    ],
-    "date": "2026-07-11"
-  },
-  {
-    "name": "Ned Gravel",
-    "url": "http://nedgravel.com",
-    "reg_link": "http://www.BikeReg.com/73348",
-    "location": "Nederland",
-    "latitude": 39.9613759,
-    "longitude": -105.5108312,
-    "type": [
-      "Gravel"
-    ],
-    "date": "2026-07-12"
-  },
-  {
     "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
     "url": "https://peaktopeak.trainingtiltapp.com/",
     "reg_link": "http://www.BikeReg.com/75532",
@@ -254,30 +230,6 @@
       "Criterium"
     ],
     "date": "2026-07-22"
-  },
-  {
-    "name": "2026 Colorado Park 2 Park Challenge",
-    "url": "http://www.copark2park.com",
-    "reg_link": "http://www.BikeReg.com/73286",
-    "location": "Denver",
-    "latitude": 39.743817,
-    "longitude": -104.9567045,
-    "type": [
-      "Gran Fondo"
-    ],
-    "date": "2026-07-25"
-  },
-  {
-    "name": "Mt. Blue Sky Hill Climb",
-    "url": "https://runsignup.com/Race/CO/IdahoSprings/BlueSkyHillClimb",
-    "reg_link": "https://runsignup.com/Race/Register/?raceId=188677",
-    "location": "Idaho Springs",
-    "latitude": 39.739563,
-    "longitude": -105.521937,
-    "type": [
-      "Hill Climb"
-    ],
-    "date": "2026-07-25"
   },
   {
     "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
