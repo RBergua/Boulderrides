@@ -729,8 +729,9 @@
   const sheetMeta  = document.getElementById("sheet-meta");
   const sheetBtn   = document.getElementById("sheet-strava-btn");
   const infoBtnEl  = document.getElementById("info-btn");
+  const racesBtnEl = document.getElementById("races-btn");
   const metricBtn  = document.getElementById('metric-btn');
-  
+
   let metricUnits  = false; // default to imperial; toggled by the Metric button
   let currentHL   = null;   // segmentLines array for the currently highlighted route (mobile)
   // Assigned inside loadRoutes; called by closeSheet to undo highlighting on dismiss
@@ -789,6 +790,7 @@
     requestAnimationFrame(() => {
       document.documentElement.style.setProperty("--sheet-height", sheet.offsetHeight + "px");
       infoBtnEl.classList.add("sheet-open");
+      racesBtnEl.classList.add("sheet-open");
       metricBtn.classList.add("sheet-open");
       document.querySelector('.maplibregl-ctrl-attrib')?.classList.add('hidden');
     });
@@ -798,6 +800,7 @@
   function closeSheet() {
     sheet.classList.remove("open");
     infoBtnEl.classList.remove("sheet-open");
+    racesBtnEl.classList.remove("sheet-open");
     metricBtn.classList.remove("sheet-open");
     document.querySelector('.maplibregl-ctrl-attrib').classList.remove('hidden');
     if (currentHL) {
