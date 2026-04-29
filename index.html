@@ -621,19 +621,24 @@
   // Rides grouped by date: { "YYYY-MM-DD": [ride, ride, ...], ... }
   let ridesByDate = {};
 
-  // Fetch ride data immediately, in parallel with the map style loading.
+  // Loads initial rides data in parallel and plots them once map is ready
   //console.time('club_rides.json'); // Testing: check the time to load JSON data.
-  const ridesReady = fetch('club_rides.json')
-    .then(r => r.json())
-    .then(rides => {
-      //console.timeEnd('club_rides.json'); // Testing: check the time to load JSON data.
-      // Group rides by date (YYYY-MM-DD)
-      rides.forEach(ride => {
-        const date = ride.date.split(" ")[0]; // Extract YYYY-MM-DD from "2026-03-04 12:00"
-        if (!ridesByDate[date]) ridesByDate[date] = [];
-        ridesByDate[date].push(ride);
-      });
-    });
+  const ridesReady = (async () => {
+    const res = await fetch('club_rides.json');
+    const rides = await res.json();
+    //console.timeEnd('club_rides.json'); // Testing: check the time to load JSON data.
+
+    // Group rides by date (YYYY-MM-DD)
+    for (const ride of rides) {
+      const date = ride.date.split(" ")[0];
+
+      if (!ridesByDate[date]) {
+        ridesByDate[date] = [];
+      }
+
+      ridesByDate[date].push(ride);
+    }
+  })();
 
   // MapLibre requires addSource/addLayer after the style is ready.
   // Wait for BOTH the map style AND ride data before rendering — whichever
@@ -1042,8 +1047,10 @@
 
         // Helper: format date as "April 26, 2026"
         const formatDate = (dateStr) => {
-          const d = new Date(dateStr);
-          return d.toLocaleDateString("en-US", {
+          const [y, m, d] = dateStr.split("-").map(Number);
+          const date = new Date(y, m - 1, d);
+
+          return date.toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric"
@@ -1074,30 +1081,40 @@
 
           div.innerHTML = `
             <!-- Race name -->
-            <p style="margin: 0 0 6px; font-weight: 600;">
+            <p style="margin: 0 0 0px; font-weight: 600;">
               <a href="${race.url}">${race.name}</a>
             </p>
 
-            <!-- Date -->
-            <p style="margin: 0 0 6px; font-weight: 600;">
-              📅 ${dateText}
+            <!-- Type (subtext under name) -->
+            <p style="margin: 0 0 4px; font-size: 0.7em; color: #888;">
+              ${Array.isArray(race.type) ? race.type.join(", ") : race.type || "Unknown"}
             </p>
 
-            <!-- Location -->
-            <p style="margin: 0 0 4px; font-size: 0.9em;">
-              📍 
-              <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">
-              ${race.location}
-              </a>
-            </p>
+            <!-- Indented details block -->
+            <div style="margin-left: 12px;">
 
-            <!-- Register -->
-            <p style="margin: 0 0 10px; font-size: 0.9em;">
-              📝 
-              <a href="${race.reg_link}" target="_blank" rel="noopener noreferrer">
-                Register
-              </a>
-            </p>
+              <!-- Date -->
+              <p style="margin: 0 0 6px; font-weight: 600;">
+                📅 ${dateText}
+              </p>
+
+              <!-- Location -->
+              <p style="margin: 0 0 4px; font-size: 0.9em;">
+                📍 
+                <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">
+                  ${race.location}
+                </a>
+              </p>
+
+              <!-- Register -->
+              <p style="margin: 0 0 10px; font-size: 0.9em;">
+                📝 
+                <a href="${race.reg_link}" target="_blank" rel="noopener noreferrer">
+                  Register
+                </a>
+              </p>
+
+            </div>
 
             <hr>
           `;
