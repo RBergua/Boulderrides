@@ -1,0 +1,334 @@
+[
+  {
+    "name": "Koppenberg Road Race",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/73713",
+    "location": "Superior",
+    "latitude": 39.9527634,
+    "longitude": -105.1685977,
+    "type": [
+      "Road Race",
+      "American Cycling Association"
+    ],
+    "date": "2026-05-03"
+  },
+  {
+    "name": "Superville Stage Race",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/74224",
+    "location": "Superior",
+    "latitude": 39.9083424420418,
+    "longitude": -105.169929835871,
+    "type": [
+      "Road Race"
+    ],
+    "date": [
+      "2026-05-16",
+      "2026-05-17"
+    ]
+  },
+  {
+    "name": "Superville Time Trial",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/73917",
+    "location": "Superior",
+    "latitude": 39.9527634,
+    "longitude": -105.1685977,
+    "type": [
+      "Time Trial"
+    ],
+    "date": "2026-05-16"
+  },
+  {
+    "name": "Louisville Criterium",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/73919",
+    "location": "Louisville",
+    "latitude": 39.9703955327484,
+    "longitude": -105.165531682906,
+    "type": [
+      "Road Race"
+    ],
+    "date": "2026-05-16"
+  },
+  {
+    "name": "Superior Morgul Road Race",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/73922",
+    "location": "Superior",
+    "latitude": 39.9083424420418,
+    "longitude": -105.169929835871,
+    "type": [
+      "Road Race"
+    ],
+    "date": "2026-05-17"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-06-03"
+  },
+  {
+    "name": "The Eddy Rando Steel Classic 2026",
+    "url": "https://www.eddyrando.com",
+    "reg_link": "http://www.BikeReg.com/75062",
+    "location": "Boulder",
+    "latitude": 40.0469086,
+    "longitude": -105.2615382,
+    "type": [
+      "Special Event"
+    ],
+    "date": "2026-06-07"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-06-10"
+  },
+  {
+    "name": "Thunder Valley Short Track Mountain Bike Race Series",
+    "url": "https://www.velocityventures.bike/events/thunder-valley-short-track",
+    "reg_link": "http://www.BikeReg.com/76362",
+    "location": "Morrison",
+    "latitude": 39.7023717,
+    "longitude": -105.1979076,
+    "type": [
+      "Mountain Bike",
+      "Colorado Bicycle Racing Association (CBRA)"
+    ],
+    "date": "2026-06-16"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-06-17"
+  },
+  {
+    "name": "Thunder Valley Short Track Mountain Bike Race Series",
+    "url": "https://www.velocityventures.bike/events/thunder-valley-short-track",
+    "reg_link": "http://www.BikeReg.com/76362",
+    "location": "Morrison",
+    "latitude": 39.7023717,
+    "longitude": -105.1979076,
+    "type": [
+      "Mountain Bike",
+      "Colorado Bicycle Racing Association (CBRA)"
+    ],
+    "date": "2026-06-23"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-06-24"
+  },
+  {
+    "name": "Thunder Valley Short Track Mountain Bike Race Series",
+    "url": "https://www.velocityventures.bike/events/thunder-valley-short-track",
+    "reg_link": "http://www.BikeReg.com/76362",
+    "location": "Morrison",
+    "latitude": 39.7023717,
+    "longitude": -105.1979076,
+    "type": [
+      "Mountain Bike",
+      "Colorado Bicycle Racing Association (CBRA)"
+    ],
+    "date": "2026-06-30"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-07-01"
+  },
+  {
+    "name": "Thunder Valley Short Track Mountain Bike Race Series",
+    "url": "https://www.velocityventures.bike/events/thunder-valley-short-track",
+    "reg_link": "http://www.BikeReg.com/76362",
+    "location": "Morrison",
+    "latitude": 39.7023717,
+    "longitude": -105.1979076,
+    "type": [
+      "Mountain Bike",
+      "Colorado Bicycle Racing Association (CBRA)"
+    ],
+    "date": "2026-07-07"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-07-08"
+  },
+  {
+    "name": "Triple Bypass",
+    "url": "https://www.triplebypass.org",
+    "reg_link": "https://runsignup.com/Race/CO/Evergreen/TripleBypass",
+    "location": "Evergreen",
+    "latitude": 39.75821,
+    "longitude": -105.684059,
+    "type": [
+      "Gran Fondo"
+    ],
+    "date": "2026-07-11"
+  },
+  {
+    "name": "Ned Gravel",
+    "url": "http://nedgravel.com",
+    "reg_link": "http://www.BikeReg.com/73348",
+    "location": "Nederland",
+    "latitude": 39.9613759,
+    "longitude": -105.5108312,
+    "type": [
+      "Gravel"
+    ],
+    "date": "2026-07-12"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-07-15"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-07-22"
+  },
+  {
+    "name": "2026 Colorado Park 2 Park Challenge",
+    "url": "http://www.copark2park.com",
+    "reg_link": "http://www.BikeReg.com/73286",
+    "location": "Denver",
+    "latitude": 39.743817,
+    "longitude": -104.9567045,
+    "type": [
+      "Gran Fondo"
+    ],
+    "date": "2026-07-25"
+  },
+  {
+    "name": "Mt. Blue Sky Hill Climb",
+    "url": "https://runsignup.com/Race/CO/IdahoSprings/BlueSkyHillClimb",
+    "reg_link": "https://runsignup.com/Race/Register/?raceId=188677",
+    "location": "Idaho Springs",
+    "latitude": 39.739563,
+    "longitude": -105.521937,
+    "type": [
+      "Hill Climb"
+    ],
+    "date": "2026-07-25"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-07-29"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-08-05"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-08-12"
+  },
+  {
+    "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
+    "url": "https://peaktopeak.trainingtiltapp.com/",
+    "reg_link": "http://www.BikeReg.com/75532",
+    "location": "Golden",
+    "latitude": 39.755543,
+    "longitude": -105.2210997,
+    "type": [
+      "Road Race",
+      "Criterium"
+    ],
+    "date": "2026-08-19"
+  }
+]
