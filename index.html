@@ -163,9 +163,11 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       transition: background 0.2s;
     }
-    #info-btn   { bottom: 49px; background: #007bff; }
+    #info-btn   { bottom: 89px; background: #007bff; }
+    #races-btn  { bottom: 49px; background: #007bff; }
     #metric-btn { bottom: 9px;  background: #777; } /* gray background when not selected */
     #info-btn:hover   { background: #0056b3; }
+    #races-btn:hover  { background: #0056b3; }
     #metric-btn.active { background: #007bff; }
     #metric-btn:active { transform: scale(0.98); }
 
@@ -180,14 +182,25 @@
     }
     #info-page.open { display: block; }
 
-    #info-content {
+    /* Full-screen "Races" page */
+    #races-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: white;
+      z-index: 2000;
+      overflow-y: auto;
+    }
+    #races-page.open { display: block; }
+
+    #info-content, #races-content {
       max-width: 640px;
       margin: 0 auto;
       padding: 60px 24px 48px;
     }
 
     /* Close button: always visibe in the top-right corner */
-    #info-close {
+    #info-close, #races-close {
       position: fixed;
       top: 14px;
       right: 16px;
@@ -203,13 +216,13 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       transition: background 0.2s;
     }
-    #info-close:hover { background: #0056b3; }
+    #info-close:hover, #races-close:hover { background: #0056b3; }
 
     /* Info page typography */
-    #info-content h1 { font-size: 1.6em; color: #007bff; margin: 0 0 8px; }
-    #info-content h2 { font-size: 1.15em; color: #222; margin: 28px 0 8px; }
-    #info-content p { margin: 0 0 12px; line-height: 1.7; color: #333; font-size: 0.95em; }
-    #info-content hr {border: none; border-top: 1px solid #eee; margin: 24px 0; }
+    #info-content h1, #races-content h1 { font-size: 1.6em; color: #007bff; margin: 0 0 8px; }
+    #info-content h2, #races-content h2 { font-size: 1.15em; color: #222; margin: 28px 0 8px; }
+    #info-content p, #races-content p { margin: 0 0 12px; line-height: 1.7; color: #333; font-size: 0.95em; }
+    #info-content hr, #races-content hr {border: none; border-top: 1px solid #eee; margin: 24px 0; }
 
     /* Mobile bottom sheet */
     #ride-sheet {
@@ -249,11 +262,13 @@
     #sheet-strava-btn:active { background: #e04400; transform: scale(0.98); }
     #sheet-strava-btn.no-url { background: #ccc; cursor: default; }
 
-    /* On touch devices: hide info button, metric button, and map attribution behind sheet when open */
+    /* On touch devices: hide info button, races button, metric button, and map attribution behind sheet when open */
     @media (pointer: coarse) {
       #info-btn { transition: background 0.2s, bottom 0.3s ease; }
+      #races-btn { transition: background 0.2s, bottom 0.3s ease; }
       #metric-btn { transition: background 0.2s, bottom 0.3s ease; }
       #info-btn.sheet-open { opacity: 0; pointer-events: none; }
+      #races-btn.sheet-open { opacity: 0; pointer-events: none; }
       #metric-btn.sheet-open { opacity: 0; pointer-events: none; }      
       .maplibregl-ctrl-attrib { transition: opacity 0.3s ease; } /* compact mode */
       .maplibregl-ctrl-attrib.hidden { opacity: 0; pointer-events: none; }
@@ -327,7 +342,11 @@
 <!-- "More" info button (bottom-left, above Metric) -->
 <button id="info-btn" class="overlay-btn"
         onclick="document.getElementById('info-page').classList.add('open')">More</button>
- 
+
+<!-- Races & Events button (bottom-left, between More and Metric) -->
+<button id="races-btn" class="overlay-btn"
+        onclick="document.getElementById('races-page').classList.add('open')">Races</button>
+
 <!-- Metric/Imperial toggle (default: imperial) -->
 <button id="metric-btn" class="overlay-btn">Metric</button>
 
@@ -472,6 +491,25 @@
   </div>
 </div>
 
+<!-- Full-screen Races & Events page -->
+<div id="races-page">
+  <button id="races-close" onclick="document.getElementById('races-page').classList.remove('open')">✕ Close</button>
+
+  <div id="races-content">
+
+    <h1>Races &amp; Events</h1>
+
+    <p>
+      Upcoming races and events around Boulder, CO within a 35-mile radius for the next 2 months. Whether you're racing, spectating, or volunteering, you'll find them here. Data is pulled weekly from the BikeReg API (Mondays at 3 AM).
+    </p>
+    <p style="font-size:0.9em; color:#888;">
+      Some major events (e.g., Triple Bypass, Mt. Blue Sky Hill Climb) are not listed in <a href="https://www.bikereg.com" target="_blank" rel="noopener noreferrer">BikeReg.com</a> and are hardcoded in the backend process.
+    </p>
+
+    <hr>
+  </div>
+</div>
+
 <!-- MapLibre GL JS -->
 <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
 
@@ -563,7 +601,7 @@
       console.log('MapTiler: OK');
       map.setStyle(maptilerStyleUrl);
     })
-    .catch(() => console.warn('MapTiler unavailable, keeping OpenFreeMap fallback'));
+    .catch(() => console.warn('MapTiler unavailable, keeping Stadia fallback'));
 
   // Zoom in/out buttons (compass hidden)
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
@@ -584,9 +622,11 @@
   let ridesByDate = {};
 
   // Fetch ride data immediately, in parallel with the map style loading.
+  //console.time('club_rides.json'); // Testing: check the time to load JSON data.
   const ridesReady = fetch('club_rides.json')
     .then(r => r.json())
     .then(rides => {
+      //console.timeEnd('club_rides.json'); // Testing: check the time to load JSON data.
       // Group rides by date (YYYY-MM-DD)
       rides.forEach(ride => {
         const date = ride.date.split(" ")[0]; // Extract YYYY-MM-DD from "2026-03-04 12:00"
@@ -598,7 +638,9 @@
   // MapLibre requires addSource/addLayer after the style is ready.
   // Wait for BOTH the map style AND ride data before rendering — whichever
   // finishes last triggers generateCalendar().
+  //console.time('map style'); // Testing: check the time to load the map style.
   map.on('load', () => {
+    //console.timeEnd('map style'); // Testing: check the time to load the map style.
     ridesReady.then(() => generateCalendar());
   });
 
@@ -970,6 +1012,104 @@
       });
       applyStyles(changes);
     }
+
+    // -------------------------------
+    // Load races & render Races page
+    // -------------------------------
+    (async function loadRaces() {
+      // Container where all races will be included
+      const container = document.getElementById("races-content");
+      if (!container) return; // Page not loaded or missing container element
+
+      try {
+        // Fetch races data from local JSON file (updated weekly from BikeReg API)
+        const res = await fetch("races.json");
+        const races = await res.json();
+
+        // In case there are no races available.
+        if (!races || races.length === 0) {
+          container.innerHTML = `
+            <p style="font-weight: 600; margin: 0;">
+              No races found.
+            </p>
+          `;
+          return;
+        }
+
+        // Get today's date for filtering. Avoid showing past races
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        // Helper: format date as "April 26, 2026"
+        const formatDate = (dateStr) => {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+        };
+
+        // Loop through
+        races.forEach(race => {
+
+          // Handle single or multi-day dates
+          const dates = Array.isArray(race.date) ? race.date : [race.date];
+
+          // Skip if ALL dates are in the past
+          if (dates.every(d => new Date(d) < today)) return;
+
+          // Build date display
+          let dateText;
+          if (dates.length === 1) {
+            dateText = formatDate(dates[0]);
+          } else {
+            dateText = `${formatDate(dates[0])} – ${formatDate(dates[dates.length - 1])}`;
+          }
+
+          // Google Maps link
+          const mapsLink = `https://www.google.com/maps?q=${race.latitude},${race.longitude}`;
+
+          const div = document.createElement("div");
+
+          div.innerHTML = `
+            <!-- Race name -->
+            <p style="margin: 0 0 6px; font-weight: 600;">
+              <a href="${race.url}">${race.name}</a>
+            </p>
+
+            <!-- Date -->
+            <p style="margin: 0 0 6px; font-weight: 600;">
+              📅 ${dateText}
+            </p>
+
+            <!-- Location -->
+            <p style="margin: 0 0 4px; font-size: 0.9em;">
+              📍 
+              <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">
+              ${race.location}
+              </a>
+            </p>
+
+            <!-- Register -->
+            <p style="margin: 0 0 10px; font-size: 0.9em;">
+              📝 
+              <a href="${race.reg_link}" target="_blank" rel="noopener noreferrer">
+                Register
+              </a>
+            </p>
+
+            <hr>
+          `;
+
+          container.appendChild(div);
+        });
+
+      } catch (err) {
+        console.error("Failed to load races:", err);
+      }
+
+    })();
 
     // Per-ride rendering
     routes.forEach(ride => {
