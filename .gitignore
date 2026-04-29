@@ -8,3 +8,4 @@ event_log.json
 strava_env/
 Strava_requests.py
 manifest.json
+BikeReg_requests.py
