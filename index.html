@@ -345,7 +345,7 @@
 
 <!-- Races & Events button (bottom-left, between More and Metric) -->
 <button id="races-btn" class="overlay-btn"
-        onclick="document.getElementById('races-page').classList.add('open')">Races</button>
+        onclick="document.getElementById('races-page').classList.add('open'); loadRaces()">Races</button>  <!-- Reload races on click -->
 
 <!-- Metric/Imperial toggle (default: imperial) -->
 <button id="metric-btn" class="overlay-btn">Metric</button>
@@ -503,7 +503,7 @@
       Upcoming races and events around Boulder, CO within a 35-mile radius for the next 2 months. Whether you're racing, spectating, or volunteering, you'll find them here. Data is pulled weekly from the BikeReg API (Mondays at 3 AM).
     </p>
     <p style="font-size:0.9em; color:#888;">
-      Some major events (e.g., Triple Bypass, Mt. Blue Sky Hill Climb) are not listed in <a href="https://www.bikereg.com" target="_blank" rel="noopener noreferrer">BikeReg.com</a> and are hardcoded in the backend process.
+      Some major events (e.g., Triple Bypass, Mt. Blue Sky Hill Climb) are not listed in <a href="https://www.bikereg.com" target="_blank" rel="noopener noreferrer">bikereg.com</a> and are hardcoded in the backend process.
     </p>
 
     <hr>
@@ -1018,116 +1018,6 @@
       applyStyles(changes);
     }
 
-    // -------------------------------
-    // Load races & render Races page
-    // -------------------------------
-    (async function loadRaces() {
-      // Container where all races will be included
-      const container = document.getElementById("races-content");
-      if (!container) return; // Page not loaded or missing container element
-
-      try {
-        // Fetch races data from local JSON file (updated weekly from BikeReg API)
-        const res = await fetch("races.json");
-        const races = await res.json();
-
-        // In case there are no races available.
-        if (!races || races.length === 0) {
-          container.innerHTML = `
-            <p style="font-weight: 600; margin: 0;">
-              No races found.
-            </p>
-          `;
-          return;
-        }
-
-        // Get today's date for filtering. Avoid showing past races
-        const today = new Date();
-        today.setHours(0,0,0,0);
-
-        // Helper: format date as "April 26, 2026"
-        const formatDate = (dateStr) => {
-          const [y, m, d] = dateStr.split("-").map(Number);
-          const date = new Date(y, m - 1, d);
-
-          return date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          });
-        };
-
-        // Loop through
-        races.forEach(race => {
-
-          // Handle single or multi-day dates
-          const dates = Array.isArray(race.date) ? race.date : [race.date];
-
-          // Skip if ALL dates are in the past
-          if (dates.every(d => new Date(d) < today)) return;
-
-          // Build date display
-          let dateText;
-          if (dates.length === 1) {
-            dateText = formatDate(dates[0]);
-          } else {
-            dateText = `${formatDate(dates[0])} – ${formatDate(dates[dates.length - 1])}`;
-          }
-
-          // Google Maps link
-          const mapsLink = `https://www.google.com/maps?q=${race.latitude},${race.longitude}`;
-
-          const div = document.createElement("div");
-
-          div.innerHTML = `
-            <!-- Race name -->
-            <p style="margin: 0 0 0px; font-weight: 600;">
-              <a href="${race.url}">${race.name}</a>
-            </p>
-
-            <!-- Type (subtext under name) -->
-            <p style="margin: 0 0 4px; font-size: 0.7em; color: #888;">
-              ${Array.isArray(race.type) ? race.type.join(", ") : race.type || "Unknown"}
-            </p>
-
-            <!-- Indented details block -->
-            <div style="margin-left: 12px;">
-
-              <!-- Date -->
-              <p style="margin: 0 0 6px; font-weight: 600;">
-                📅 ${dateText}
-              </p>
-
-              <!-- Location -->
-              <p style="margin: 0 0 4px; font-size: 0.9em;">
-                📍 
-                <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">
-                  ${race.location}
-                </a>
-              </p>
-
-              <!-- Register -->
-              <p style="margin: 0 0 10px; font-size: 0.9em;">
-                📝 
-                <a href="${race.reg_link}" target="_blank" rel="noopener noreferrer">
-                  Register
-                </a>
-              </p>
-
-            </div>
-
-            <hr>
-          `;
-
-          container.appendChild(div);
-        });
-
-      } catch (err) {
-        console.error("Failed to load races:", err);
-      }
-
-    })();
-
     // Per-ride rendering
     routes.forEach(ride => {
       if (!ride.route?.length) return; // skip empty routes
@@ -1269,7 +1159,7 @@
           map._routeSourceIds.push(hitId);
           return hitId;
         }
-        
+
         if (isTouchDevice) {
           // MOBILE
           // Tap route → bottom sheet slides up with details
@@ -1400,6 +1290,124 @@
         ${ride.women_only ? badge('Women only', 'women') : ''}
       </div>`;
   }
+ 
+  // -------------------------------
+  // Load races & render Races page
+  // -------------------------------
+  window.loadRaces = async function loadRaces() { // window.loadRaces in the global scope so it can be called from the button click
+    // Container where all races will be included
+    const container = document.getElementById("races-content");
+    if (!container) return; // Page not loaded or missing container element
+
+    try {
+      // Fetch races data from local JSON file (updated weekly from BikeReg API)
+      const res = await fetch("races.json", { cache: "no-store" }); // no-store to always get the latest version when navigating (very light file)
+      const races = await res.json();
+
+      container.querySelectorAll("div").forEach(el => el.remove()); // clear old race entries before re-rendering, so clicking Races a second time doesn't duplicate the list.
+
+      // In case there are no races available.
+      if (!races || races.length === 0) {
+        container.innerHTML = `
+          <p style="font-weight: 600; margin: 0;">
+            No races found.
+          </p>
+        `;
+        return;
+      }
+
+      // Get today's date for filtering. Avoid showing past races
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      // Helper: format date as "April 26, 2026"
+      const formatDate = (dateStr) => {
+        const [y, m, d] = dateStr.split("-").map(Number);
+        const date = new Date(y, m - 1, d);
+
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      };
+
+      // Loop through
+      races.forEach(race => {
+
+        // Handle single or multi-day dates
+        const dates = Array.isArray(race.date) ? race.date : [race.date];
+
+        // Skip if ALL dates are in the past.
+        // Parse as local date (split into parts) to avoid UTC-vs-local timezone shifts that can cause a race dated "today" to appear as yesterday.
+        const parseLocalDate = (str) => {
+          const [y, m, d] = str.split("-").map(Number);
+          return new Date(y, m - 1, d);
+        };
+        if (dates.every(d => parseLocalDate(d) < today)) return;
+
+        // Build date display
+        let dateText;
+        if (dates.length === 1) {
+          dateText = formatDate(dates[0]);
+        } else {
+          dateText = `${formatDate(dates[0])} – ${formatDate(dates[dates.length - 1])}`;
+        }
+
+        // Google Maps link
+        const mapsLink = `https://www.google.com/maps?q=${race.latitude},${race.longitude}`;
+
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+          <!-- Race name -->
+          <p style="margin: 0 0 0px; font-weight: 600;">
+            <a href="${race.url}" target="_blank" rel="noopener noreferrer">${race.name}</a>
+          </p>
+
+          <!-- Type (subtext under name) -->
+          <p style="margin: 0 0 4px; font-size: 0.7em; color: #888;">
+            ${Array.isArray(race.type) ? race.type.join(", ") : race.type || "Unknown"}
+          </p>
+
+          <!-- Indented details block -->
+          <div style="margin-left: 12px;">
+
+            <!-- Date -->
+            <p style="margin: 0 0 6px; font-weight: 600;">
+              📅 ${dateText}
+            </p>
+
+            <!-- Location -->
+            <p style="margin: 0 0 4px; font-size: 0.9em;">
+              📍 
+              <a href="${mapsLink}" target="_blank" rel="noopener noreferrer">
+                ${race.location}
+              </a>
+            </p>
+
+            <!-- Register -->
+            <p style="margin: 0 0 10px; font-size: 0.9em;">
+              📝 
+              <a href="${race.reg_link}" target="_blank" rel="noopener noreferrer">
+                Register
+              </a>
+            </p>
+
+          </div>
+
+          <hr>
+        `;
+
+        container.appendChild(div);
+      });
+
+    } catch (err) {
+      console.error("Failed to load races:", err);
+    }
+
+  };
+
   // -------------------------------
   // Generate 7-day calendar
   // -------------------------------
