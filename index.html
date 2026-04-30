@@ -822,64 +822,212 @@
   // Each point is [lat, lng, surface] where surface is 'paved' or 'unpaved'.
   // Returns an array of segments: { latlngs: [[lat, lng], ...], surface: 'paved'|'unpaved' }
   //
+  // Step 0 — input normalization: ensure every point has a valid surface type. 
+  // Only an explicit 'unpaved' string gets the dashed treatment. 
+  // If there is no surface data available (e.g., null), it will be treated as a continuous line.
+  //
   // Step 1 — smooth: isolated single unpaved points flanked by paved on both
   // sides are promoted to paved. They can't form a visible dashed line and are
   // almost certainly GPS misclassifications. Two or more consecutive unpaved
   // points are left alone as a genuine unpaved stretch.
   //
-  // Step 2 — single pass: walk every edge (point-to-point pair) of the route.
-  // A new chunk is started whenever the surface type changes OR a duplicate
-  // unpaved edge is encountered. Chunks are emitted as segments when closed.
-  //
-  // Unpaved deduplication (handles out-and-backs and partial backtracks):
-  // - Each unpaved edge is converted to a direction-independent key on a
-  //   snapped ~8 m grid (A→B and B→A produce the same key).
-  // - A single "seen" set covers the entire route, so an edge traversed on the
-  //   way out is skipped on the return regardless of where the backtrack ends.
-  // - Paved edges are never deduplicated. Stacked solid lines are fine.
-  //
-  // Consecutive segments overlap by one point at their boundary so polylines
-  // connect seamlessly with no gaps on the map.
-  function buildSegments(route) {
-    if (route.length < 2) return [];
+  // Step 2 — single pass (core logic):
+  // We walk through the route point-by-point using spatial proximity detection.
+  // The idea is that on the first unpaved, we discretize the route. Later on, we check if new unpaved 
+  // points are close to the route that was already drawn.
+  // For each point:
+  //  If it's paved:    → always draw
+  //  If it's unpaved:  → check if a nearby point has already been drawn
+  //                      (using a snapped grid ~8m resolution)
+  //                          → if YES (already seen): stop the current segment (prevents overdrawing)
+  //                          → if NO: continue drawing and mark this point as seen
+  // This approach:
+  //   Handles different sampling densities (critical)
+  //   Handles partial overlaps naturally
+  //   Handles out-and-backs without needing exact matches
+  // Important:
+  //   We deduplicate points, which makes the system robust to GPS noise and uneven point spacing.
 
-    // ── Step 1: smooth out lone unpaved points ──────────────────────────────
-    const surfaces = route.map(pt => (pt[2] === 'unpaved' ? 'unpaved' : 'paved')); // Only an explicit 'unpaved' string gets the dashed treatment. If there is no surface data available (e.g., null), it will be treated as a continuous line. 
-    const smoothed = surfaces.map((s, i) =>
-      (s === 'unpaved' && surfaces[i-1] === 'paved' && surfaces[i+1] === 'paved') ? 'paved' : s
-    );
+  // SNAP_METERS defines the resolution of the grid used to detect whether
+  // two GPS points are "close enough" to be considered the same location.
+  // And it's also used to discreize the unpaved segments.
+  const SNAP_METERS = 8;
+  const METERS_PER_DEG = 111111; // grid cell size (m), meters per degree latitude
 
-    // ── Unpaved edge deduplication helpers ──────────────────────────────────
-    const SNAP = 8, M = 111111; // grid cell size (m), metres per degree latitude
-    function edgeKey([lat1, lng1], [lat2, lng2]) {
-      const snap = (lat, lng) => [Math.round(lat * M / SNAP), Math.round(lng * M * Math.cos(lat * Math.PI / 180) / SNAP)];
-      const [a, b] = [snap(lat1, lng1).join('§'), snap(lat2, lng2).join('§')];
-      return a < b ? `${a}|${b}` : `${b}|${a}`;
+  // Distance helper: distance between two points in meters.
+  function distanceMeters(a, b) {
+    const R = 6371000; // Earth radius in meters
+    const toRad = d => (d * Math.PI) / 180;
+
+    const dLat = toRad(b[0] - a[0]);
+    const dLng = toRad(b[1] - a[1]);
+
+    const lat1 = toRad(a[0]);
+    const lat2 = toRad(b[0]);
+
+    const x =
+      Math.sin(dLat / 2) ** 2 +
+      Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+
+    return 2 * R * Math.asin(Math.sqrt(x));
+  }
+
+  // Grid snapping helper: converts lat/lng to a snapped cell coordinate pair.
+  // We don't compare raw GPS coordinates (it could be noisy). Instead, we group nearby
+  // points into the same "cell" so we can reliably detect repeats.
+  function snapCell(lat, lng) {
+    const scale = METERS_PER_DEG / SNAP_METERS;
+    return [
+      Math.round(lat * scale),
+      Math.round(lng * scale),
+    ];
+  }
+
+  // Converts a point into a unique string key for Set storage.
+  function pointKey(pt) {
+    return snapCell(pt[0], pt[1]).join(',');
+  }
+
+  // Edge discretization
+  // Instead of marking only endpoint of an unpaved segment, we fill the entire
+  // edge with intermediate grid points.
+  // Without this, return paths or partial overlaps would fail to match.
+  function addEdgePoints(a, b, seenUnpavedPoints) {
+    const steps = Math.max(1, Math.ceil(distanceMeters(a, b) / SNAP_METERS)); // We use the SNAP_METERS to define the discretization!
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+
+      const lat = a[0] + (b[0] - a[0]) * t;
+      const lng = a[1] + (b[1] - a[1]) * t;
+
+      seenUnpavedPoints.add(pointKey([lat, lng]));
     }
+  }
 
-    // ── Step 2: Grouping consecutive points by surface type ──────────────────
-    const segments = [];
-    const seen     = new Set(); // unpaved edges already drawn; spans the whole route
-    let chunk        = [route[0]]; // points accumulated for the current segment
-    let chunkSurface = smoothed[0];
+  // Debug helper to visualize snapped cell keys in the console
+  //function snapDebug(pt) {
+  //  const s = snapCell(pt[0], pt[1]);
+  //  return `${s[0]},${s[1]}`;
+  //}
 
-    for (let i = 1; i < route.length; i++) {
-      const pt = route[i], surf = smoothed[i];
-      const key = surf === 'unpaved' ? edgeKey([route[i-1][0], route[i-1][1]], [pt[0], pt[1]]) : null;
-      const surfaceChanged = surf !== chunkSurface;
-      const isDuplicate    = key !== null && seen.has(key);
- 
-      if (surfaceChanged || isDuplicate) {
-        if (chunk.length > 1) segments.push({ latlngs: chunk.map(pt => [pt[0], pt[1]]), surface: chunkSurface });
-        chunk        = surfaceChanged && !isDuplicate ? [route[i-1]] : [];
-        chunkSurface = surf;
+  // ── Step 0 and Step 1 ────────────────────────────────────────────────────────
+  // Normalize + smooth surfaces:
+  function normalizeSurfaces(route) {
+    const surfaces = route.map(p => p[2] === 'unpaved' ? 'unpaved' : 'paved'); // Only an explicit 'unpaved' string gets the dashed treatment. If there is no surface data available (e.g., null), it will be treated as a continuous line.
+
+    // Remove isolated "unpaved" noise
+    return surfaces.map((s, i) => {
+      const prev = surfaces[i - 1] ?? 'paved';
+      const next = surfaces[i + 1] ?? 'paved';
+
+      if (s === 'unpaved' && prev === 'paved' && next === 'paved') {
+        return 'paved';
       }
- 
-      if (key && !seen.has(key)) seen.add(key);
-      if (!isDuplicate) chunk.push(pt);
+      return s;
+    });
+  }
+
+  // ─── Main builder (single clean pass) ───────────────────────────────────────────
+  // Converts raw GPS points into drawable segments.
+  // Output format:
+  // [
+  //   {
+  //     surface: 'paved' | 'unpaved',
+  //     latlngs: [[lat, lng], ...]
+  //   }
+  // ]
+  //
+  // We scan once, maintain an "active segment", and switch when surface changes.
+  function buildSegments(route) {
+    if (route.length < 2) return []; // A segment requires at least 2 points.
+
+    const surfaces = normalizeSurfaces(route);
+    const seenUnpavedPoints = new Set(); // Stores all grid cells that have already been drawn for unpaved areas
+
+    const segments = [];
+    let current = null; // active segment
+
+    // Start a new segment
+    function startSegment(surface, startPoint) {
+      current = {
+        surface,
+        latlngs: [startPoint]
+      };
     }
- 
-    if (chunk.length > 1) segments.push({ latlngs: chunk.map(pt => [pt[0], pt[1]]), surface: chunkSurface });
+
+    // Add a point to the current segment
+    function pushPoint(pt) {
+      current.latlngs.push(pt);
+    }
+
+    // Close current segment if valid
+    function endSegment() {
+      if (current && current.latlngs.length > 1) {
+        segments.push(current);
+      }
+      current = null;
+    }
+
+    // ── Process each edge (prev → curr) ─────────────────────────────
+    for (let i = 1; i < route.length; i++) {
+      const prev = route[i - 1];
+      const curr = route[i];
+      const surface = surfaces[i];
+
+      // --- PAVED: always draw continuously---
+      if (surface === 'paved') {
+        if (!current || current.surface !== 'paved') {
+          endSegment();
+          startSegment('paved', prev); // ensure continuity
+        }
+        pushPoint(curr);
+        continue;
+      }
+
+      // --- UNPAVED: We only draw if this region hasn't already been covered. ---
+      const key = pointKey(curr);
+      const alreadyDrawn = seenUnpavedPoints.has(key);
+
+      // Debug: only log unpaved points
+      // Example of output: ✅ NEW | pt: 556720,-1461598 | raw: 40.083850 -105.235180
+      // "pt": The snapped grid cell key (lat/lng converted into discrete spatial bins). Math.round(lat * scale), Math.round(lng * scale)
+      // "raw": The raw GPS coordinates (lat/lng).
+      //if (surface === 'unpaved') {
+      //  console.log(
+      //    alreadyDrawn ? '❌ DUP' : '✅ NEW',
+      //    '| pt:', key,
+      //    '| raw:', curr[0].toFixed(6), curr[1].toFixed(6)
+      //  );
+      //}
+
+      // If this area was already covered, stop current segment
+      if (alreadyDrawn) {
+        // If we're in an unpaved segment, we should CLOSE it at this point
+        // instead of discarding the connection entirely. This fixes closed loops.
+        if (current && current.surface === 'unpaved') {
+          pushPoint(curr);   // include closure point
+        }
+
+        endSegment();
+        continue;
+      }
+
+      // Mark entire edge between prev and curr as covered to prevent overdrawing nearby points in the future
+      addEdgePoints(prev, curr, seenUnpavedPoints);
+
+      // Start new unpaved segment if needed
+      if (!current || current.surface !== 'unpaved') {
+        endSegment();
+        startSegment('unpaved', prev);
+      }
+
+      pushPoint(curr);
+    }
+
+    // Close final segment
+    endSegment();
+
     return segments;
   }
 
@@ -893,10 +1041,10 @@
     if (isTouchDevice) closeSheet(); // If we're on mobile: close sheet (if it was open) when moving between days
 
     // Debug logs to check the selected date and available rides (F12 or CTRL+SHIFT+I in browser to open console)
-    console.log("Selected date:", date);
-    console.log("Dates with rides:", Object.keys(ridesByDate));
+    //console.log("Selected date:", date);
+    //console.log("Dates with rides:", Object.keys(ridesByDate));
 
-    // Remove old route layers, sources, and pin markers rom previous render
+    // Remove old route layers, sources, and pin markers from previous render
     map._routeMarkers?.forEach(m => m.remove());
     map._routeMarkers = [];
     map._routeLayerIds?.forEach(id => {
@@ -1092,7 +1240,7 @@
           }
  
           // Build one FeatureCollection with all segments tagged by surface type.
-          // This is a single addSource call regardless of how many segments there are.
+          // This is a single addSource call regardless of how many segments there are in a route.
           const segments = buildSegments(ride.route);
           const features = segments.map(seg => ({
             type: 'Feature',
