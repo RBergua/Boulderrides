@@ -6,8 +6,8 @@
 
 # Boulder Group Rides
 
-An interactive map showing **cycling group rides in Boulder, Colorado**.  
-It aggregates **Strava club events** and displays upcoming rides by day.
+An interactive map showing **cycling group rides in Boulder, Colorado**.
+It aggregates **Strava club events** and displays upcoming rides by day. It also lists nearby **races and events** sourced from BikeReg.
 
 ![Boulder Group Rides demo](demo.gif)
 
@@ -26,6 +26,7 @@ It aggregates **Strava club events** and displays upcoming rides by day.
 - **Desktop** — Hover over a route or its start pin to highlight it and dim the others to gray, showing the club name, ride title, start time, and whether the ride is women-only; click to open the Strava event in a new tab
 - **Mobile** — Tap a route or its start pin to see its details in a bottom sheet; tap "View on Strava" to open the event; swipe the panel down (or tap the map background) to dismiss it and restore all routes
 - **Auto-fit bounds** — The map zooms to fit all routes for the selected day
+- **Races & Events** — Dedicated page listing upcoming races and events
 - **Progressive Web App (PWA)** — Installable on Android and iOS home screens for a full-screen, app-like experience with custom splash screens for all device sizes
 
 ## Getting Started
@@ -47,7 +48,7 @@ Then open [http://localhost:8000](http://localhost:8000) in your browser.
  
 > **Tip:** To emulate a mobile device, open browser DevTools (`F12`) and toggle the device toolbar.
 
-## Data Format
+## Ride Data Format
 
 Ride data is automatically fetched from the Strava API by a backend process that runs twice a day (12 PM & 1 AM) and keeps `club_rides.json` up to date. Each entry in the array represents one ride:
 
@@ -98,18 +99,59 @@ Ride data is automatically fetched from the Strava API by a backend process that
 | `elevation_gain` | number | Total elevation gain in feet (integer); `null` if unavailable |
 | `route` | `[[lat, lng, surface], ...]` | Array of latitude and longitude coordinates defining the route; each point includes a surface tag (`"paved"` or `"unpaved"`), or `null` if the OpenStreetMap surface classification failed |
 
+## Race and Events Data Format
+
+Race and event data is stored in `races.json`. Data is refreshed weekly from the BikeReg API (Mondays at 3 AM). Some major events not listed on BikeReg (e.g., Triple Bypass, Mt. Blue Sky Hill Climb) are hardcoded in the backend. Each entry in the array represents one race or event:
+
+```json
+[
+  {
+    "name": "Koppenberg Road Race",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/73713",
+    "location": "Superior",
+    "latitude": 39.9527634,
+    "longitude": -105.1685977,
+    "type": ["Road Race", "American Cycling Association"],
+    "date": "2026-05-03"
+  },
+  {
+    "name": "Superville Stage Race",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/74224",
+    "location": "Superior",
+    "latitude": 39.9083424,
+    "longitude": -105.1699298,
+    "type": ["Road Race"],
+    "date": ["2026-05-16", "2026-05-17"]
+  }
+]
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `name` | string | Display name of the race or event |
+| `url` | string | Event website URL |
+| `reg_link` | string | Registration link (typically a BikeReg URL) |
+| `location` | string | City or town where the event takes place |
+| `latitude` | number | Latitude of the event location |
+| `longitude` | number | Longitude of the event location |
+| `type` | array of strings | One or more event type tags (e.g. `"Road Race"`, `"Criterium"`, `"Time Trial"`, `"Mountain Bike"`, `"Special Event"`) and/or sanctioning body (e.g. `"American Cycling Association"`, `"Colorado Bicycle Racing Association (CBRA)"`) |
+| `date` | string or array of strings | Event date in `YYYY-MM-DD` format; use a plain string for single-day events, or an array of strings for multi-day events (e.g. a stage race) |
+
 ## Project Structure
 
 ```
 ├── index.html        # Main app (map + calendar)
 └── club_rides.json   # Ride data, auto-updated by the backend process (Strava API). The file is only committed when its contents change
+└── races.json        # Race and event data, auto-updated by the backend process (BikeReg API). Major events not on BikeReg are hardcoded
 ```
 
 ## Customization
 
 - **Days shown** — Change the `7` in `generateCalendar()` to show more or fewer days. Note that a longer window of time could be misleading. Recurring weekly rides only appear once their previous occurrence has passed, so looking further ahead would result in missing entries
 - **Default map center** — Update `defaultCenter` in `index.html` (currently set to downtown Boulder)
-- **Default zoom** — Update `defaultZoom` (currently `14`)
+- **Default zoom** — Update `defaultZoom` (currently `12`)
 - **Route colors** — Edit the `colors` palette array in `index.html` to change the cycle of colors assigned to routes
 - **Map tiles** — The app loads Stadia Maps immediately (no key required) so the map is instantly visible, then silently upgrades to MapTiler (outdoor/terrain) if the key is valid and quota is available. The MapTiler API key is locked to requests from `boulderrides.cc`
 
@@ -121,6 +163,7 @@ Ride data is automatically fetched from the Strava API by a backend process that
 - [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) — Extends MapTiler tile cache from the deault 8 hours to 120 days, saving API requests and making the map load faster for returning visitors (tiles served from disk instead of the network)
 - [OpenStreetMap](https://www.openstreetmap.org/) — Road surface data source used for paved/unpaved classification, queried via the [Overpass API](https://overpass-api.de/) by the backend
 - [Strava API](https://developers.strava.com/) — Source of group ride data, fetched by the backend
+- [BikeReg API](https://www.bikereg.com/) — Source of race and event data, fetched by the backend
 - [GoatCounter](https://www.goatcounter.com/) — Privacy-friendly analytics
 
 ## Support
