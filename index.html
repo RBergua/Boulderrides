@@ -339,9 +339,10 @@
 <!-- Full-screen map -->
 <div id="map"></div>
  
-<!-- "More" info button (bottom-left, above Metric) -->
+<!-- "More" info button (bottom-left, above Races) -->
+<!-- We call openInfoPage() function instead of "document.getElementById('info-page').classList.add('open');" here to refresh the Buy Me a Coffee button -->
 <button id="info-btn" class="overlay-btn"
-        onclick="document.getElementById('info-page').classList.add('open')">More</button>
+        onclick="openInfoPage()">More</button>
 
 <!-- Races & Events button (bottom-left, between More and Metric) -->
 <button id="races-btn" class="overlay-btn"
@@ -377,8 +378,9 @@
     <p style="font-size: 0.9em; color: #888;">
       This project is free and runs 24/7 on a personal server. If it's gotten you out on a ride, you can support it:
       <br>
+      <!-- "Buy me a coffee" smart button (id="bmc-btn"): updating counter when opening "More" page -->
       <a href="https://www.buymeacoffee.com/rbergua">
-        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=rbergua&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff" />
+        <img id="bmc-btn" src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=rbergua&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff" />
       </a>
       <br>
       Every bit helps keep it alive!
@@ -528,7 +530,7 @@
   console.log("isTouchDevice:", isTouchDevice); // Check if we detect computer vs mobile devices properly (CTRL+SHIFT+I in browser to open console)
 
   // -------------------------------
-  // Unit formatting helpers 
+  // Unit formatting helpers
   //--------------------------------
   // Converts "HH:MM" (24-hour format) to "H:MM AM/PM" (12-hour format). More common in the US.
   function formatTime12h(timeStr) {
@@ -568,6 +570,26 @@
       </svg>`;
     el.style.cssText = 'cursor:pointer; width:24px; height:32px;';
     return new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lnglat);
+  }
+
+  // -------------------------------
+  // Buy Me a Coffee button: preload a fresh image in the background and swap it in once ready.
+  // The static placeholder defined in HTML is visible immediately while the counter updates behind the scenes.
+  // -------------------------------
+  window.openInfoPage = function() { // window. prefix makes this function accessible from the HTML button element.
+    document.getElementById('info-page').classList.add('open');
+
+    const base = "https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=rbergua&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff";
+    const anchor = document.querySelector('#info-content a[href*="buymeacoffee"]');
+    if (anchor) {
+      const newImg = document.createElement('img');
+      newImg.src = base + '&v_=' + Date.now(); // Timestamp forces a fresh fetch, bypassing the browser cache
+      newImg.onload = () => {                  // Only swap once the new image is fully loaded (no flicker)
+        const oldImg = document.getElementById('bmc-btn');
+        if (oldImg) oldImg.replaceWith(newImg);
+        newImg.id = 'bmc-btn';                 // Transfer the id so future opens can find it again
+      };
+    }
   }
 
   // -------------------------------
