@@ -1601,7 +1601,7 @@
       col.onclick = () => {
         document.querySelectorAll('.day-column').forEach(el => el.classList.remove('selected'));
         col.classList.add('selected');
-        loadRoutes(isoDate);
+        loadRoutes(isoDate); // For a given day, this re-calls loadRoutes() and buildSegments() that includes the paved/unpaved logic. But it's a vey fast operation (small dataset).
       };
  
       if (!firstRideDate && rides.length) {
