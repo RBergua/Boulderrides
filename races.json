@@ -78,18 +78,6 @@
     "date": "2026-07-08"
   },
   {
-    "name": "Tuesday Night Thunder",
-    "url": "https://sanitassports.us/collections/tnt-tuesday-night-thunder-series",
-    "reg_link": "https://docs.google.com/forms/d/e/1FAIpQLSeyk0ObW8gsCewB9n13069mI21kah7573TO7kMLE-m5XQRLIg/viewform?pli=1",
-    "location": "Louisville",
-    "latitude": 39.970987,
-    "longitude": -105.11585,
-    "type": [
-      "Criterium"
-    ],
-    "date": "2026-07-14"
-  },
-  {
     "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
     "url": "https://peaktopeak.trainingtiltapp.com/",
     "reg_link": "http://www.BikeReg.com/75532",
@@ -101,18 +89,6 @@
       "Criterium"
     ],
     "date": "2026-07-15"
-  },
-  {
-    "name": "Tuesday Night Thunder",
-    "url": "https://sanitassports.us/collections/tnt-tuesday-night-thunder-series",
-    "reg_link": "https://docs.google.com/forms/d/e/1FAIpQLSeyk0ObW8gsCewB9n13069mI21kah7573TO7kMLE-m5XQRLIg/viewform?pli=1",
-    "location": "Louisville",
-    "latitude": 39.970987,
-    "longitude": -105.11585,
-    "type": [
-      "Criterium"
-    ],
-    "date": "2026-07-21"
   },
   {
     "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
@@ -128,42 +104,6 @@
     "date": "2026-07-22"
   },
   {
-    "name": "2026 Colorado Park 2 Park Challenge",
-    "url": "http://www.copark2park.com",
-    "reg_link": "http://www.BikeReg.com/73286",
-    "location": "Denver",
-    "latitude": 39.743817,
-    "longitude": -104.9567045,
-    "type": [
-      "Gran Fondo"
-    ],
-    "date": "2026-07-25"
-  },
-  {
-    "name": "Mt. Blue Sky Hill Climb",
-    "url": "https://runsignup.com/Race/CO/IdahoSprings/BlueSkyHillClimb",
-    "reg_link": "https://runsignup.com/Race/Register/?raceId=188677",
-    "location": "Idaho Springs",
-    "latitude": 39.739563,
-    "longitude": -105.521937,
-    "type": [
-      "Hill Climb"
-    ],
-    "date": "2026-07-25"
-  },
-  {
-    "name": "Tuesday Night Thunder",
-    "url": "https://sanitassports.us/collections/tnt-tuesday-night-thunder-series",
-    "reg_link": "https://docs.google.com/forms/d/e/1FAIpQLSeyk0ObW8gsCewB9n13069mI21kah7573TO7kMLE-m5XQRLIg/viewform?pli=1",
-    "location": "Louisville",
-    "latitude": 39.970987,
-    "longitude": -105.11585,
-    "type": [
-      "Criterium"
-    ],
-    "date": "2026-07-28"
-  },
-  {
     "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
     "url": "https://peaktopeak.trainingtiltapp.com/",
     "reg_link": "http://www.BikeReg.com/75532",
@@ -175,35 +115,6 @@
       "Criterium"
     ],
     "date": "2026-07-29"
-  },
-  {
-    "name": "Crooked Gravel",
-    "url": "https://geminiadventures.com/bike/crooked-gravel",
-    "reg_link": "http://www.BikeReg.com/73238",
-    "location": "Winter Park",
-    "latitude": 39.9201055,
-    "longitude": -105.784452,
-    "type": [
-      "Recreational",
-      "Gravel"
-    ],
-    "date": [
-      "2026-08-01",
-      "2026-08-02"
-    ]
-  },
-  {
-    "name": "Lucky Pie Criterium p/b Sonic Boom Racing",
-    "url": "https://www.sonicboomracing.com/",
-    "reg_link": "http://www.BikeReg.com/75625",
-    "location": "Louisville",
-    "latitude": 39.9764945226989,
-    "longitude": -105.130984389805,
-    "type": [
-      "Road Race",
-      "Colorado Bicycle Racing Association (CBRA)"
-    ],
-    "date": "2026-08-01"
   },
   {
     "name": "Peak to Peak Training Systems Training Race Series at South Table Mountain",
@@ -300,5 +211,41 @@
       "2026-09-12",
       "2026-09-13"
     ]
+  },
+  {
+    "name": "Cyclocross Series 4-pack",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/77096",
+    "location": "Boulder",
+    "latitude": 40.0454736,
+    "longitude": -105.2838511,
+    "type": [
+      "Cyclocross"
+    ],
+    "date": "2026-09-19"
+  },
+  {
+    "name": "CYCLO-X Harlow Platts",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/77116",
+    "location": "Boulder",
+    "latitude": 39.9746374,
+    "longitude": -105.2486267,
+    "type": [
+      "Cyclocross"
+    ],
+    "date": "2026-09-19"
+  },
+  {
+    "name": "CYCLO-X Valmont",
+    "url": "http://www.withoutlimits.co",
+    "reg_link": "http://www.BikeReg.com/77119",
+    "location": "Boulder",
+    "latitude": 40.031724,
+    "longitude": -105.2316572,
+    "type": [
+      "Cyclocross"
+    ],
+    "date": "2026-09-26"
   }
 ]

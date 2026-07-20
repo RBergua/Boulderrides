@@ -7,7 +7,8 @@ This branch holds the JSON data files consumed by the frontend.
 | File | Description |
 |------|-------------|
 | `weather.json` | Weather forecast for Boulder, CO fetched from the National Weather Service |
-| `club_rides.json` | Upcoming club rides fetched from Strava and Ride With GPS |
+| `club_rides.json` | Upcoming club rides (latitude, longitude, surface) fetched from Strava and Ride With GPS (used by `main`) |
+| `gpx_rides.json` | Upcoming club rides (latitude, longitude, altitude) fetched from Strava and Ride With GPS (used by `main/gpx`) |
 | `races.json` | Upcoming races fetched from BikeReg |
 
 Each file is only staged and committed if its fetched content has actually changed.
