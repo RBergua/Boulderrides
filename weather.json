@@ -1,47 +1,75 @@
 {
-  "2026-08-03": [
+  "2026-09-07": [
     {
       "time": "9 AM",
-      "temperature_F": 84,
+      "temperature_F": 71,
+      "description": "Mostly Cloudy",
+      "symbol": "☁️"
+    },
+    {
+      "time": "4 PM",
+      "temperature_F": 86,
+      "description": "Slight Chance Showers And Thunderstorms",
+      "symbol": "🌩️"
+    }
+  ],
+  "2026-09-08": [
+    {
+      "time": "9 AM",
+      "temperature_F": 69,
+      "description": "Sunny",
+      "symbol": "☀️"
+    },
+    {
+      "time": "4 PM",
+      "temperature_F": 85,
       "description": "Mostly Sunny",
       "symbol": "🌤️"
-    },
-    {
-      "time": "4 PM",
-      "temperature_F": 93,
-      "description": "Patchy Smoke",
-      "symbol": "🌫️"
     }
   ],
-  "2026-08-04": [
+  "2026-09-09": [
     {
       "time": "9 AM",
-      "temperature_F": 61,
-      "description": "Patchy Smoke",
-      "symbol": "🌫️"
-    },
-    {
-      "time": "4 PM",
-      "temperature_F": 76,
-      "description": "Patchy Smoke",
-      "symbol": "🌫️"
-    }
-  ],
-  "2026-08-05": [
-    {
-      "time": "9 AM",
-      "temperature_F": 65,
+      "temperature_F": 64,
       "description": "Sunny",
       "symbol": "☀️"
     },
     {
       "time": "4 PM",
-      "temperature_F": 83,
+      "temperature_F": 84,
       "description": "Sunny",
       "symbol": "☀️"
     }
   ],
-  "2026-08-06": [
+  "2026-09-10": [
+    {
+      "time": "9 AM",
+      "temperature_F": 67,
+      "description": "Sunny",
+      "symbol": "☀️"
+    },
+    {
+      "time": "4 PM",
+      "temperature_F": 91,
+      "description": "Mostly Sunny",
+      "symbol": "🌤️"
+    }
+  ],
+  "2026-09-11": [
+    {
+      "time": "9 AM",
+      "temperature_F": 73,
+      "description": "Sunny",
+      "symbol": "☀️"
+    },
+    {
+      "time": "4 PM",
+      "temperature_F": 91,
+      "description": "Sunny",
+      "symbol": "☀️"
+    }
+  ],
+  "2026-09-12": [
     {
       "time": "9 AM",
       "temperature_F": 70,
@@ -50,51 +78,23 @@
     },
     {
       "time": "4 PM",
-      "temperature_F": 93,
-      "description": "Sunny",
-      "symbol": "☀️"
+      "temperature_F": 86,
+      "description": "Slight Chance Showers And Thunderstorms",
+      "symbol": "🌩️"
     }
   ],
-  "2026-08-07": [
+  "2026-09-13": [
     {
       "time": "9 AM",
+      "temperature_F": 67,
+      "description": "Mostly Sunny",
+      "symbol": "🌤️"
+    },
+    {
+      "time": "4 PM",
       "temperature_F": 78,
-      "description": "Sunny",
-      "symbol": "☀️"
-    },
-    {
-      "time": "4 PM",
-      "temperature_F": 96,
-      "description": "Sunny",
-      "symbol": "☀️"
-    }
-  ],
-  "2026-08-08": [
-    {
-      "time": "9 AM",
-      "temperature_F": 82,
-      "description": "Sunny",
-      "symbol": "☀️"
-    },
-    {
-      "time": "4 PM",
-      "temperature_F": 99,
-      "description": "Sunny",
-      "symbol": "☀️"
-    }
-  ],
-  "2026-08-09": [
-    {
-      "time": "9 AM",
-      "temperature_F": 83,
-      "description": "Sunny",
-      "symbol": "☀️"
-    },
-    {
-      "time": "4 PM",
-      "temperature_F": 98,
-      "description": "Sunny",
-      "symbol": "☀️"
+      "description": "Chance Showers And Thunderstorms",
+      "symbol": "🌩️"
     }
   ]
 }
