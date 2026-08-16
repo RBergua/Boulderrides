@@ -166,7 +166,7 @@
     #info-btn   { bottom: 89px; background: #007bff; }
     #races-btn  { bottom: 49px; background: #007bff; }
     #gpx-btn    { background: #007bff; }
-    #metric-btn { bottom: 9px;  background: #777; } /* gray background when not selected */
+    #metric-btn { bottom: 15px;  background: #777; } /* gray background when not selected */
     #info-btn:hover   { background: #0056b3; }
     #races-btn:hover  { background: #0056b3; }
     #gpx-btn:hover    { background: #0056b3; }
@@ -177,7 +177,7 @@
     #menu-toggle-btn {
       position: fixed;
       left: 16px;
-      bottom: 9px;
+      bottom: 15px;             /* bottom space for hamburger button */
       z-index: 1000;
       width: 44px;
       height: 44px;
@@ -187,6 +187,10 @@
       color: white;
       font-size: 1.3em;
       line-height: 1;
+      padding: 0;                /* remove default button padding so flex-centering below is exact */
+      display: flex;             /* perfectly centers the ☰ icon both horizontally and vertically */
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       transition: background 0.2s;
@@ -197,7 +201,7 @@
     #menu-panel {
       position: fixed;
       left: 16px;
-      bottom: 62px;              /* sits just above the hamburger button */
+      bottom: 68px;              /* sits just above the hamburger button */
       z-index: 1000;
       display: none;             /* hidden by default; JS toggles the .open class */
       flex-direction: column;
@@ -839,7 +843,7 @@
       if (weatherWidget) {
         if (isTouchDevice) {
           weatherWidget.style.top    = 'auto';
-          weatherWidget.style.bottom = '9px';   // align with #menu-toggle-btn
+          weatherWidget.style.bottom = '15px';   // align with #menu-toggle-btn
           weatherWidget.style.left   = '100px'; // clears the 44px-wide hamburger button (left:16px, so it spans to 60px)
           weatherWidget.style.right  = 'auto';
         }
