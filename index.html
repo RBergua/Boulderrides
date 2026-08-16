@@ -165,11 +165,51 @@
     }
     #info-btn   { bottom: 89px; background: #007bff; }
     #races-btn  { bottom: 49px; background: #007bff; }
+    #gpx-btn    { background: #007bff; }
     #metric-btn { bottom: 9px;  background: #777; } /* gray background when not selected */
     #info-btn:hover   { background: #0056b3; }
     #races-btn:hover  { background: #0056b3; }
+    #gpx-btn:hover    { background: #0056b3; }
     #metric-btn.active { background: #007bff; }
     #metric-btn:active { transform: scale(0.98); }
+
+    /* Hamburger menu toggle (bottom-left) */
+    #menu-toggle-btn {
+      position: fixed;
+      left: 16px;
+      bottom: 9px;
+      z-index: 1000;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;       /* circular icon button */
+      background: #007bff;
+      color: white;
+      font-size: 1.3em;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: background 0.2s;
+    }
+    #menu-toggle-btn:hover { background: #0056b3; }
+
+    /* Collapsible panel: a translucent rectangle holding the 4 buttons, stacked above the hamburger */
+    #menu-panel {
+      position: fixed;
+      left: 16px;
+      bottom: 62px;              /* sits just above the hamburger button */
+      z-index: 1000;
+      display: none;             /* hidden by default; JS toggles the .open class */
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.45);  /* "transparency" - lower alpha = more see-through */
+      backdrop-filter: blur(4px);             /* frosted-glass effect behind it */
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    #menu-panel.open { display: flex; }
+    #menu-panel .overlay-btn { position: static; }
 
     /* Full-screen "More" page */
     #info-page {
@@ -264,12 +304,8 @@
 
     /* On touch devices: hide info button, races button, metric button, and map attribution behind sheet when open */
     @media (pointer: coarse) {
-      #info-btn { transition: background 0.2s, bottom 0.3s ease; }
-      #races-btn { transition: background 0.2s, bottom 0.3s ease; }
-      #metric-btn { transition: background 0.2s, bottom 0.3s ease; }
-      #info-btn.sheet-open { opacity: 0; pointer-events: none; }
-      #races-btn.sheet-open { opacity: 0; pointer-events: none; }
-      #metric-btn.sheet-open { opacity: 0; pointer-events: none; }
+      #menu-toggle-btn { transition: background 0.2s, opacity 0.2s ease; }
+      #menu-toggle-btn.sheet-open { opacity: 0; pointer-events: none; }
       .maplibregl-ctrl-attrib { transition: opacity 0.3s ease; } /* compact mode */
       .maplibregl-ctrl-attrib.hidden { opacity: 0; pointer-events: none; }
     }
@@ -418,17 +454,27 @@
   font-family:Arial; font-size:0.9em; line-height:1.4; text-align:center;">
 </div>
 
-<!-- "More" info button (bottom-left, above Races) -->
-<!-- We call openInfoPage() function instead of "document.getElementById('info-page').classList.add('open');" here to refresh the Buy Me a Coffee button -->
-<button id="info-btn" class="overlay-btn"
-        onclick="openInfoPage()">More</button>
+<!-- Hamburger menu toggle (bottom-left) -->
+<button id="menu-toggle-btn" onclick="toggleMenuPanel(event)">☰</button>
 
-<!-- Races & Events button (bottom-left, between More and Metric) -->
-<button id="races-btn" class="overlay-btn"
-        onclick="document.getElementById('races-page').classList.add('open'); loadRaces()">Races</button>
+<!-- Collapsible panel holding More / Races / GPX/List / Metric (hidden until hamburger is clicked) -->
+<div id="menu-panel">
+  <!-- "More" info button -->
+  <!-- We call openInfoPage() function instead of "document.getElementById('info-page').classList.add('open');" here to refresh the Buy Me a Coffee button -->
+  <button id="info-btn" class="overlay-btn"
+          onclick="openInfoPage(); closeMenuPanel()">More</button>
 
-<!-- Metric/Imperial toggle (default: imperial) -->
-<button id="metric-btn" class="overlay-btn">Metric</button>
+  <!-- Races & Events button -->
+  <button id="races-btn" class="overlay-btn"
+          onclick="document.getElementById('races-page').classList.add('open'); loadRaces(); closeMenuPanel()">Races</button>
+
+  <!-- GPX/List: opens the GPX route list page -->
+  <button id="gpx-btn" class="overlay-btn"
+          onclick="window.location.href = '/gpx'">GPX/List</button> <!-- Opens the GPX route list page (relative path) -->
+
+          <!-- Metric/Imperial toggle (default: imperial) -->
+  <button id="metric-btn" class="overlay-btn">Metric</button>
+</div>
 
 <!-- Mobile bottom sheet: slides up on route tap -->
 <div id="ride-sheet">
@@ -553,9 +599,6 @@
     </p>
     <p>
       Use the <strong>Metric</strong> button to display the ride statistics in km/meters and the temperature in °C.
-    </p>
-    <p>
-      Get <strong>GPX files</strong> for upcoming rides at <a href="/gpx">boulderrides.cc/gpx</a>.
     </p>
 
     <hr>
@@ -791,13 +834,13 @@
 
       // If there is a banner, the weather widget won't fit at the top in the mobile version.
       //   Desktop: leave the weather widget at its position. There is plenty of room.
-      //   Mobile: relocate it to the bottom-left, next to the More / Races / Metric buttons.
+      //   Mobile: relocate it to the bottom-left, next to the hamburger menu button.
       const weatherWidget = document.getElementById('weather-widget');
       if (weatherWidget) {
         if (isTouchDevice) {
           weatherWidget.style.top    = 'auto';
-          weatherWidget.style.bottom = '9px';   // align with #metric-btn
-          weatherWidget.style.left   = '100px'; // clears the 72px-wide button column (left:16px)
+          weatherWidget.style.bottom = '9px';   // align with #menu-toggle-btn
+          weatherWidget.style.left   = '100px'; // clears the 44px-wide hamburger button (left:16px, so it spans to 60px)
           weatherWidget.style.right  = 'auto';
         }
         // Desktop: no change. Weather widget stays at its default top-right position.
@@ -1167,7 +1210,25 @@
   const sheetBtn   = document.getElementById("sheet-source-btn");
   const infoBtnEl  = document.getElementById("info-btn");
   const racesBtnEl = document.getElementById("races-btn");
-  const metricBtn  = document.getElementById('metric-btn');
+  const metricBtn   = document.getElementById('metric-btn');
+  const menuToggleBtn = document.getElementById('menu-toggle-btn');
+  const menuPanel      = document.getElementById('menu-panel');
+
+  // Opens/closes the hamburger menu panel (More / Races / GPX/List / Metric).
+  // window. prefix makes these accessible from the HTML button elements (see openInfoPage above).
+  window.toggleMenuPanel = function(event) {
+    event.stopPropagation(); // don't let this click bubble up and immediately close the panel
+    menuPanel.classList.toggle('open');
+  };
+  window.closeMenuPanel = function() {
+    menuPanel.classList.remove('open');
+  };
+  // Clicking anywhere outside the panel (and outside the hamburger button) closes it.
+  document.addEventListener('click', (event) => {
+    if (!menuPanel.classList.contains('open')) return;
+    if (menuPanel.contains(event.target) || menuToggleBtn.contains(event.target)) return;
+    closeMenuPanel();
+  });
 
   let metricUnits  = false; // default to imperial; toggled by the Metric button
   let currentHL   = null;   // segmentLines array for the currently highlighted route (mobile)
@@ -1228,10 +1289,9 @@
     else          { sheetBtn.removeAttribute("href"); sheetBtn.classList.add("no-url"); }
 
     sheet.classList.add("open");
+    closeMenuPanel();  // don't let the ride sheet and the hamburger panel overlap
     requestAnimationFrame(() => {
-      infoBtnEl.classList.add("sheet-open");
-      racesBtnEl.classList.add("sheet-open");
-      metricBtn.classList.add("sheet-open");
+      menuToggleBtn.classList.add("sheet-open");
       document.querySelector('.maplibregl-ctrl-attrib')?.classList.add('hidden');
     });
   }
@@ -1239,9 +1299,7 @@
   // Slides down and fully resets the mobile bottom sheet.
   function closeSheet() {
     sheet.classList.remove("open");
-    infoBtnEl.classList.remove("sheet-open");
-    racesBtnEl.classList.remove("sheet-open");
-    metricBtn.classList.remove("sheet-open");
+    menuToggleBtn.classList.remove("sheet-open");
     document.querySelector('.maplibregl-ctrl-attrib').classList.remove('hidden');
     if (currentHL) {
       restoreAllRoutes(); // restore all routes to default style when sheet is dismissed
