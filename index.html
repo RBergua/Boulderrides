@@ -185,10 +185,8 @@
       border-radius: 50%;       /* circular icon button */
       background: #007bff;
       color: white;
-      font-size: 1.3em;
-      line-height: 1;
       padding: 0;                /* remove default button padding so flex-centering below is exact */
-      display: flex;             /* perfectly centers the ☰ icon both horizontally and vertically */
+      display: flex;             /* perfectly centers the icon both horizontally and vertically */
       align-items: center;
       justify-content: center;
       cursor: pointer;
@@ -459,7 +457,14 @@
 </div>
 
 <!-- Hamburger menu toggle (bottom-left) -->
-<button id="menu-toggle-btn" onclick="toggleMenuPanel(event)">☰</button>
+<!-- <button id="menu-toggle-btn" onclick="toggleMenuPanel(event)">☰</button> This has issues displaying the 3 lines in the middle of the circle for iOS Safari -->
+<button id="menu-toggle-btn" onclick="toggleMenuPanel(event)" aria-label="Menu">
+  <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <line x1="2" y1="5"  x2="18" y2="5"  stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="2" y1="10" x2="18" y2="10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="2" y1="15" x2="18" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</button>
 
 <!-- Collapsible panel holding More / Races / GPX/List / Metric (hidden until hamburger is clicked) -->
 <div id="menu-panel">
