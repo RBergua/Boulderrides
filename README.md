@@ -120,6 +120,7 @@ Similar information is fetched from the Strava and Ride with GPS API by the same
     "club_name": "Rapha Boulder",
     "title": "Social Ride",
     "date": "2026-03-08 10:00",
+    "url": "https://example.com/ride",
     "distance": 24.8,
     "elevation_gain": 1247,
     "route": [
@@ -144,6 +145,7 @@ Similar information is fetched from the Strava and Ride with GPS API by the same
 | `club_name` | string | Name of the organizing club |
 | `title` | string | Ride name |
 | `date` | string | `"YYYY-MM-DD HH:MM"` in 24-hour format; displayed as 12-hour (AM/PM) in the frontend |
+| `url` | string | Link to the Strava or Ride with GPS ride event |
 | `distance` | number | Route distance in miles (1 decimal); `null` if unavailable |
 | `elevation_gain` | number | Total elevation gain in feet (integer); `null` if unavailable |
 | `route` | `[[lat, lng, ele], ...]` | Array of route points, where each point contains latitude, longitude, and elevation in meters (`ele`) for use in the GPX `<ele>` element. Returns `null` if the route stream is unavailable or does not contain matching GPS and elevation data. |
