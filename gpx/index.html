@@ -285,8 +285,12 @@ ${trkpts}
     tbody.innerHTML = '';
     dayRides.forEach(ride => {
       const tr = document.createElement('tr');
+      // If the ride has a URL, it shows a small link icon next to the club name that opens it in a new tab.
+      const rideLink = ride.url
+        ? `<a href="${ride.url}" target="_blank" rel="noopener" aria-label="View ride" style="color:#007bff; text-decoration:none; margin-left:4px;">🔗</a>`
+        : '';
       tr.innerHTML = `
-        <td>${ride.club_name}</td>
+        <td>${ride.club_name}${rideLink}</td>
         <td>${ride.title}</td>
         <td>${fmtDistance(ride.distance)}</td>
         <td>${fmtElevation(ride.elevation_gain)}</td>
