@@ -288,14 +288,12 @@ ${trkpts}
       // If the ride has a URL, it shows a small link icon (SVG) next to the ride that opens it in a new tab.
       const rideLink = ride.url
         ? `<a href="${ride.url}" target="_blank" rel="noopener" aria-label="View ride"
-            style="display:inline-flex; align-items:center; justify-content:center;
-                width:20px; height:20px; border-radius:50%;
-                background:#007bff; margin-left:4px;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                stroke="white" stroke-width="2.5" stroke-linecap="round"
-                stroke-linejoin="round">
-              <path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.15 1.15"/>
-              <path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.15-1.15"/>
+            style="color:#007bff; text-decoration:none; margin-left:4px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="vertical-align:middle;">
+              <path d="M10 13a5 5 0 0 0 7.07.07l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/>
+              <path d="M14 11a5 5 0 0 0-7.07-.07l-3 3A5 5 0 0 0 11 21l1.72-1.72"/>
             </svg>
           </a>`
         : '';
