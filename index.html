@@ -895,6 +895,55 @@
   const maptilerStyleUrl = `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${MAPTILER_API_KEY}`; // Primary map: MapTiler Outdoors. Requires API key. We have 5,000 sessions and 100,000 requests/month for free (https://www.maptiler.com/pricing/)
   const fallbackStyleUrl = 'https://tiles.stadiamaps.com/styles/outdoors.json'; // Fallback: Stadia outdoors. Free, no key required.
 
+  // Direction arrows. Each route gets its own arrow icon, colored to match the route line.
+  const arrowImageIds = new Set();
+  function getArrowImageId(color) {
+    const id = 'route-arrow-' + color.replace(/[^a-zA-Z0-9]/g, '');
+    if (arrowImageIds.has(id)) return id;
+    arrowImageIds.add(id);
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = 56;
+    canvas.height = 40;
+    const ctx = canvas.getContext('2d');
+
+    // Rounded-rect background in the route's own color, with a soft drop shadow
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.35)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 1;
+    ctx.beginPath();
+    ctx.roundRect(2, 2, 50, 34, 12); // x, y, width, height, radius. Related to canvas.width and canvas.height above.
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.restore();
+
+    // Subtle light border so the badge reads clearly against the route line
+    ctx.beginPath();
+    ctx.roundRect(2, 2, 50, 34, 12);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.stroke();
+
+    // Solid white arrow (shaft + triangular head as one filled shape),
+    // pointing right. MapLibre rotates it to follow the route.
+    // Coordinates are centered within the rounded-rect above (2,2,50,34).
+    ctx.beginPath();
+    ctx.moveTo(9.5, 16);
+    ctx.lineTo(23.5, 16);
+    ctx.lineTo(23.5, 8);
+    ctx.lineTo(44.5, 19);
+    ctx.lineTo(23.5, 30);
+    ctx.lineTo(23.5, 22);
+    ctx.lineTo(9.5, 22);
+    ctx.closePath();
+    ctx.fillStyle = 'white';
+    ctx.fill();
+
+    map.addImage(id, ctx.getImageData(0, 0, canvas.width, canvas.height), { pixelRatio: 2, sdf: false });
+    return id;
+  }
+
   // Start with MapTiler directly.
   // If MapTiler fails (e.g., quota exceeded), we catch the style error and swap to Stadia.
   const map = new maplibregl.Map({
@@ -1648,6 +1697,11 @@
     let _seq = 0;
     const nextLayerId = () => `route-${Date.now()}-${_seq++}`;
 
+    // Direction arrows
+    // Settings for the arrows shown on the highlighted route.
+    const ROUTE_ARROW_SPACING = 150;  // Longitudinal distance between arrows (pixels)
+    const ROUTE_ARROW_SIZE    = 0.9;  // Arrow size relative to the line width
+
     // allVisibleLayers: used by highlight/restore helpers to iterate over every drawn route
     const allVisibleLayers = [];
     let hoveredHitId = null; // tracks the currently hovered hit layer (desktop only)
@@ -1658,6 +1712,10 @@
     // Falls back to sequential setPaintProperty on older builds where this is not available.
     function applyStyles(changes) {
       const apply = () => changes.forEach(({ id, prop, value }) => {
+        if (prop === 'visibility') {
+          map.setLayoutProperty(id, prop, value, { validate: false });
+          return;
+        }
         // Kill the default MapLibre paint transition (~300ms) before each change so
         // highlights and dims are instant with zero visible lag.
         map.setPaintProperty(id, prop + '-transition', { duration: 0, delay: 0 }, { validate: false });
@@ -1673,6 +1731,12 @@
       allVisibleLayers.forEach(l => {
         const isActive = l.segmentLines === activeSegmentLines;
         if (isActive) {
+          // Bring this route's layers to the very top of the stack so it draws
+          // over every other route where paths overlap (white base → line → arrow).
+          l.whitelines.forEach(id => map.moveLayer(id));
+          l.segmentLines.forEach(id => map.moveLayer(id));
+          map.moveLayer(l.arrowLayer);
+
           // Active route: thicker and fully opaque, keep its own color
           l.segmentLines.forEach(id => {
             changes.push({ id, prop: 'line-color',   value: l.color });
@@ -1681,6 +1745,14 @@
           });
           // Restore white base lines so unpaved dashes look correct on the highlighted route
           l.whitelines.forEach(id => changes.push({ id, prop: 'line-opacity', value: 1 }));
+          // Direction arrows. Show for active route
+          changes.push({
+            id: l.arrowLayer,
+            prop: 'visibility',
+            value: 'visible'
+          });
+          // Bring this route's pin above every other pin
+          l.marker.getElement().style.zIndex = 3;
         } else {
           // Inactive routes: thin gray so the active one stands out
           l.segmentLines.forEach(id => {
@@ -1690,13 +1762,23 @@
           });
           // Hide white base lines on inactive unpaved segments
           l.whitelines.forEach(id => changes.push({ id, prop: 'line-opacity', value: 0 }));
+          // Direction arrows. Hide for inactive routes
+          changes.push({
+            id: l.arrowLayer,
+            prop: 'visibility',
+            value: 'none'
+          });
           // Grayscale colored pins; plain opacity-dim for black pins
           const filter = l.color !== 'black' ? 'grayscale(1) opacity(0.5)' : 'opacity(0.4)';
           l.marker.getElement()?.style.setProperty('filter', filter);
+          l.marker.getElement().style.zIndex = 1; // send inactive pins behind the highlighted one
         }
       });
       // Dim checkered race pins when any route is highlighted
-      raceMarkers.forEach(m => m.getElement()?.style.setProperty('filter', 'grayscale(1) opacity(0.5)'));
+      raceMarkers.forEach(m => {
+        m.getElement()?.style.setProperty('filter', 'grayscale(1) opacity(0.5)');
+        m.getElement().style.zIndex = 1;
+      });
       applyStyles(changes);
     }
 
@@ -1711,12 +1793,80 @@
         });
         // Restore white base lines under unpaved segments
         l.whitelines.forEach(id => changes.push({ id, prop: 'line-opacity', value: 1 }));
+        // Direction arrows. Hide when no route is selected
+        changes.push({
+          id: l.arrowLayer,
+          prop: 'visibility',
+          value: 'none'
+        });
         // Restore pin marker color and opacity
         l.marker.getElement()?.style.removeProperty('filter');
+        l.marker.getElement().style.zIndex = '';
       });
       // Restore checkered race pins
-      raceMarkers.forEach(m => m.getElement()?.style.removeProperty('filter'));
+      raceMarkers.forEach(m => {
+        m.getElement()?.style.removeProperty('filter');
+        m.getElement().style.zIndex = '';
+      });
       applyStyles(changes);
+    }
+
+    // Direction arrows. Add arrow layer
+    // Creates one directional-arrow layer for a route.
+    // The coordinates are kept in their original GPS order.
+    // MapLibre therefore knows which way the route is travelling
+    // and automatically rotates each arrow to follow that direction.
+    function addDirectionArrowLayer(allLatLngs, color) {
+      // Called once per route when its day is loaded (not on click).
+
+      const sourceId = nextLayerId();
+      const layerId  = nextLayerId();
+
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: allLatLngs.map(([lat, lng]) => [lng, lat])
+          }
+        }
+      });
+
+      map.addLayer({
+        id: layerId,
+        type: 'symbol',
+        source: sourceId,
+
+        layout: {
+          // Repeat the arrow along the entire route.
+          'symbol-placement': 'line',
+          'symbol-spacing': ROUTE_ARROW_SPACING,
+
+          // Use this route's own colored arrow image.
+          'icon-image': getArrowImageId(color),
+          'icon-size': ROUTE_ARROW_SIZE,
+
+          // Keep arrows visible even when routes overlap.
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
+
+          // Rotate the arrow to follow the route.
+          'icon-rotation-alignment': 'map',
+          'icon-pitch-alignment': 'map',
+
+          // Arrows are hidden until this route is highlighted.
+          'visibility': 'none'
+        },
+
+        paint: {
+          'icon-opacity': 1
+        }
+      });
+
+      map._routeLayerIds.push(sourceId, layerId);
+
+      return layerId;
     }
 
     // Per-ride rendering
@@ -1731,6 +1881,10 @@
       const allLatLngs = ride.route.map(pt => [pt[0], pt[1]]);
       const start      = ride._offset_start || ride.starting_location || allLatLngs[0];
       const rideTime   = formatTime12h(ride.date.split(" ")[1]);
+
+      // Direction arrows. Created after this route's line layers below so the
+      // arrow layer renders on top instead of underneath the route.
+      let arrowLayer;
 
       // Collects layer IDs for white base lines under unpaved dashes (used by highlight/restore)
       const whitelines = [];
@@ -1837,9 +1991,10 @@
 
         const { segmentLines, whitelines } = buildVisibleLines(color, 5, 0.85);
         const hitId        = addHitLayer(25);
+        arrowLayer         = addDirectionArrowLayer(allLatLngs, color); // added last so it renders on top
         const markerEl     = createPinMarker([start[1], start[0]], color).addTo(map);
         map._routeMarkers.push(markerEl);
-        allVisibleLayers.push({ segmentLines, whitelines, marker: markerEl, color, isMobile: true });
+        allVisibleLayers.push({ segmentLines, whitelines, arrowLayer, marker: markerEl, color, isMobile: true });
 
         // Tap handler: highlight this route, dim all others, open the bottom sheet
         const tapHandler = e => {
@@ -1859,9 +2014,10 @@
 
         const { segmentLines, whitelines } = buildVisibleLines(color, 4, 0.8);
         const hitId        = addHitLayer(20);
+        arrowLayer         = addDirectionArrowLayer(allLatLngs, color); // added last so it renders on top
         const markerEl     = createPinMarker([start[1], start[0]], color).addTo(map);
         map._routeMarkers.push(markerEl);
-        allVisibleLayers.push({ segmentLines, whitelines, marker: markerEl, color, isMobile: false });
+        allVisibleLayers.push({ segmentLines, whitelines, arrowLayer, marker: markerEl, color, isMobile: false });
 
         // HTML injected into the hover tooltip popup
         const tooltipContent = buildTooltipHTML(ride, rideTime);
