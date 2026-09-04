@@ -1785,6 +1785,15 @@
 
     // Restore all routes to their default (unselected) style.
     restoreAllRoutes = () => {
+      // Undo the z-order change from highlightRoute(): re-apply moveLayer()
+      // in original draw order so overlapping routes go back to stacking
+      // the way they did before any route was highlighted.
+      allVisibleLayers.forEach(l => {
+        l.whitelines.forEach(id => map.moveLayer(id));
+        l.segmentLines.forEach(id => map.moveLayer(id));
+        map.moveLayer(l.arrowLayer);
+      });
+
       const changes = [];
       allVisibleLayers.forEach(l => {
         l.segmentLines.forEach(id => {
